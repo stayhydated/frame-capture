@@ -1,0 +1,5 @@
+error: capture id must be an id, not a path
+ --> tests/ui/capture_id_path.rs:4:5
+  |
+4 |     LedOn,
+  |     ^^^^^

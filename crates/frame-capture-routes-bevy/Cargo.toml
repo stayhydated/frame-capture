@@ -1,0 +1,21 @@
+[package]
+name = "frame-capture-routes-bevy"
+version = "0.1.0"
+description = "Bevy App route-registration facade for frame-capture."
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[features]
+default = [ "macros" ]
+macros = [ "dep:frame-capture-macros", "frame-capture/macros" ]
+
+[dependencies]
+bevy_app = { features = [ "std" ], workspace = true }
+inventory.workspace = true
+frame-capture.workspace = true
+frame-capture-macros = { optional = true, workspace = true }
+frame-capture-routes = { default-features = false, workspace = true }
+
+[lints]
+workspace = true

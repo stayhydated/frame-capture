@@ -1,0 +1,21 @@
+[package]
+name = "frame-capture-mcp"
+description = "MCP server helpers for exposing frame-capture route metadata."
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[dependencies]
+rmcp.workspace = true
+serde.workspace = true
+thiserror.workspace = true
+frame-capture = { features = [ "json-schema" ], workspace = true }
+frame-capture-routes.workspace = true
+
+[dev-dependencies]
+frame-capture = { features = [ "macros" ], workspace = true }
+frame-capture-routes = { features = [ "macros" ], workspace = true }
+
+[lints]
+workspace = true

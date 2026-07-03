@@ -1,0 +1,88 @@
+[workspace]
+exclude = [ "examples/gpui" ]
+members = [
+  "crates/frame-capture",
+  "crates/frame-capture-bevy",
+  "crates/frame-capture-macros",
+  "crates/frame-capture-mcp",
+  "crates/frame-capture-routes",
+  "crates/frame-capture-routes-bevy",
+  "crates/frame-capture-toml",
+  "examples/bevy",
+]
+resolver = "3"
+
+[workspace.package]
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.96"
+version = "0.1.0"
+
+[workspace.dependencies]
+bevy = { default-features = false, version = "0.18" }
+bevy_app = { default-features = false, version = "0.18" }
+bon = "3.9"
+darling = "0.23"
+derive_more = { default-features = false, features = [
+  "as_ref",
+  "deref",
+  "display",
+  "from",
+], version = "2.1" }
+fs-err = "3.3"
+heck = "0.5"
+image = { default-features = false, features = [ "png" ], version = "0.25" }
+inventory = "0.3"
+koruma = { default-features = false, path = "../koruma/crates/koruma", version = "0.9.0" }
+proc-macro2 = "1.0"
+quote = "1.0"
+rmcp = { default-features = false, features = [
+  "macros",
+  "server",
+  "transport-io",
+], version = "1.6" }
+schemars = "1.2"
+serde = { features = [ "derive" ], version = "1.0" }
+serde_json = "1.0"
+serde_with = { default-features = false, features = [ "macros" ], version = "3.15" }
+syn = "2.0"
+thiserror = "2.0"
+toml = "0.9"
+frame-capture = { default-features = false, path = "crates/frame-capture" }
+frame-capture-bevy = { path = "crates/frame-capture-bevy" }
+frame-capture-macros = { path = "crates/frame-capture-macros" }
+frame-capture-mcp = { path = "crates/frame-capture-mcp" }
+frame-capture-routes = { default-features = false, path = "crates/frame-capture-routes" }
+frame-capture-routes-bevy = { path = "crates/frame-capture-routes-bevy" }
+frame-capture-toml = { path = "crates/frame-capture-toml" }
+
+[profile.dev]
+codegen-units = 16
+debug = "limited"
+opt-level = 1
+split-debuginfo = "unpacked"
+
+[profile.dev.package."*"]
+opt-level = 3
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = 3
+
+[workspace.lints.rust]
+unexpected_cfgs = { level = "deny" }
+
+[workspace.lints.clippy]
+dbg_macro = "deny"
+derive_partial_eq_without_eq = "warn"
+err_expect = "warn"
+incompatible_msrv = "deny"
+iter_on_single_items = "warn"
+needless_bool = "warn"
+redundant_clone = "warn"
+todo = "deny"
+type_complexity = "allow"
+uninlined_format_args = "allow"
+unused_trait_names = "warn"
+useless_conversion = "warn"

@@ -1,0 +1,21 @@
+[package]
+name = "frame-capture-example-bevy"
+version = "0.1.0"
+description = "Bevy screenshot runtime example for frame-capture."
+edition.workspace = true
+license.workspace = true
+publish = false
+rust-version.workspace = true
+
+[dependencies]
+bevy = { features = [
+  "bevy_core_pipeline",
+  "bevy_sprite",
+  "bevy_sprite_render",
+  "bevy_text",
+  "default_font",
+], workspace = true }
+frame-capture-bevy.workspace = true
+
+[lints]
+workspace = true

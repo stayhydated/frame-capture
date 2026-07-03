@@ -1,0 +1,29 @@
+[package]
+name = "frame-capture"
+version = "0.1.0"
+description = "Target-neutral route and capture-session primitives for wgpu-backed app screenshots."
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[features]
+default = [ "macros" ]
+json-schema = [ "dep:schemars" ]
+macros = [ "dep:frame-capture-macros" ]
+
+[dependencies]
+bon.workspace = true
+derive_more.workspace = true
+koruma.workspace = true
+schemars = { optional = true, workspace = true }
+serde = { workspace = true }
+serde_with.workspace = true
+thiserror.workspace = true
+frame-capture-macros = { optional = true, workspace = true }
+frame-capture-toml.workspace = true
+
+[dev-dependencies]
+serde_json.workspace = true
+
+[lints]
+workspace = true

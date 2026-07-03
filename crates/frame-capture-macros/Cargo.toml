@@ -1,0 +1,26 @@
+[package]
+name = "frame-capture-macros"
+version = "0.1.0"
+description = "Proc macros for frame-capture route declarations."
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[lib]
+proc-macro = true
+
+[dependencies]
+darling.workspace = true
+fs-err.workspace = true
+heck.workspace = true
+proc-macro2.workspace = true
+quote.workspace = true
+syn.workspace = true
+frame-capture-toml.workspace = true
+
+[dev-dependencies]
+trybuild = "1.0"
+frame-capture = { default-features = false, path = "../frame-capture" }
+
+[lints]
+workspace = true

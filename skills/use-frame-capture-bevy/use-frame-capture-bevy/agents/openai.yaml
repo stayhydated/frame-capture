@@ -1,0 +1,4 @@
+interface:
+  display_name: "Use frame-capture Bevy"
+  short_description: "Bevy deterministic screenshot wiring"
+  default_prompt: "Use $use-frame-capture-bevy to add deterministic screenshot capture to a Bevy app."

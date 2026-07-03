@@ -1,0 +1,20 @@
+[package]
+name = "frame-capture-routes"
+version = "0.1.0"
+description = "Route-only capture facade for frame-capture applications."
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[features]
+default = [ "macros" ]
+macros = [ "dep:frame-capture-macros" ]
+
+[dependencies]
+inventory.workspace = true
+thiserror.workspace = true
+frame-capture = { default-features = false, workspace = true }
+frame-capture-macros = { optional = true, workspace = true }
+
+[lints]
+workspace = true

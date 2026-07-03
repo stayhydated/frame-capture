@@ -1,0 +1,4 @@
+interface:
+  display_name: "Use frame-capture"
+  short_description: "Generic capture wiring for Rust apps"
+  default_prompt: "Use $use-frame-capture to wire deterministic screenshot routes for a route-only Rust app."
