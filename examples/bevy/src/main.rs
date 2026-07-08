@@ -85,30 +85,30 @@ fn setup_scene(
     commands.spawn((
         Text2d::new(format!("frame-capture {label}")),
         TextFont {
-            font_size: 44.0,
+            font_size: FontSize::Px(44.0),
             ..default()
         },
-        TextLayout::new_with_justify(Justify::Center),
+        TextLayout::justify(Justify::Center),
         Transform::from_xyz(0.0, 88.0, 2.0),
     ));
     commands.spawn((
         Text2d::new(metric),
         TextFont {
-            font_size: 58.0,
+            font_size: FontSize::Px(58.0),
             ..default()
         },
         TextColor(accent),
-        TextLayout::new_with_justify(Justify::Center),
+        TextLayout::justify(Justify::Center),
         Transform::from_xyz(-190.0, -30.0, 2.0),
     ));
     commands.spawn((
         Text2d::new(route.id()),
         TextFont {
-            font_size: 34.0,
+            font_size: FontSize::Px(34.0),
             ..default()
         },
         TextColor(Color::srgb(0.78, 0.82, 0.88)),
-        TextLayout::new_with_justify(Justify::Center),
+        TextLayout::justify(Justify::Center),
         Transform::from_xyz(190.0, -30.0, 2.0),
     ));
 }

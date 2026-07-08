@@ -17,7 +17,7 @@ pub enum BevyExampleScenario {
 
 #[cfg(test)]
 mod tests {
-    use frame_capture_bevy::CaptureRoute;
+    use frame_capture_bevy::CaptureRoute as _;
 
     #[derive(
         frame_capture_bevy::CaptureRouteBevy,

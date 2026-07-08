@@ -32,14 +32,20 @@ pub struct CaptureRouteRequest {
 
 #[derive(Clone, Debug)]
 pub struct CaptureRoutesServer<R: CaptureRoute> {
-    #[allow(dead_code)]
+    #[expect(
+        dead_code,
+        reason = "rmcp's tool_router macro requires the router field even though user code never reads it"
+    )]
     tool_router: ToolRouter<Self>,
     route: PhantomData<R>,
 }
 
 #[derive(Clone, Debug)]
 pub struct RegisteredCaptureRoutesServer {
-    #[allow(dead_code)]
+    #[expect(
+        dead_code,
+        reason = "rmcp's tool_router macro requires the router field even though user code never reads it"
+    )]
     tool_router: ToolRouter<Self>,
 }
 
@@ -145,11 +151,22 @@ impl ServerHandler for RegisteredCaptureRoutesServer {
     }
 }
 
+/// Lists route metadata for an enum-backed route catalog.
+///
+/// # Errors
+///
+/// Returns [`CaptureMcpError`] when the route catalog fails validation.
 pub fn capture_routes<R: CaptureRoute>() -> Result<Vec<CaptureRouteInfo>, CaptureMcpError> {
     validate_capture_routes::<R>()?;
     Ok(frame_capture::capture_route_infos::<R>())
 }
 
+/// Looks up one enum-backed route by id.
+///
+/// # Errors
+///
+/// Returns [`CaptureMcpError`] when the route catalog fails validation or `id`
+/// is not one of the catalog route ids.
 pub fn capture_route<R: CaptureRoute>(
     id: &CaptureRouteId,
 ) -> Result<CaptureRouteInfo, CaptureMcpError> {
@@ -157,6 +174,11 @@ pub fn capture_route<R: CaptureRoute>(
     Ok(CaptureRouteInfo::from(R::from_id(id.as_str())?.spec()))
 }
 
+/// Lists route metadata for the registered-route inventory.
+///
+/// # Errors
+///
+/// Returns [`CaptureMcpError`] when registered route ids are duplicated.
 pub fn registered_capture_routes() -> Result<Vec<CaptureRouteInfo>, CaptureMcpError> {
     frame_capture_routes::validate_registered_routes()?;
     Ok(frame_capture_routes::registered_routes()
@@ -165,6 +187,12 @@ pub fn registered_capture_routes() -> Result<Vec<CaptureRouteInfo>, CaptureMcpEr
         .collect())
 }
 
+/// Looks up one registered route by id.
+///
+/// # Errors
+///
+/// Returns [`CaptureMcpError`] when registered route ids are duplicated or `id`
+/// is not registered.
 pub fn registered_capture_route(id: &CaptureRouteId) -> Result<CaptureRouteInfo, CaptureMcpError> {
     frame_capture_routes::validate_registered_routes()?;
     Ok(CaptureRouteInfo::from(
@@ -172,6 +200,12 @@ pub fn registered_capture_route(id: &CaptureRouteId) -> Result<CaptureRouteInfo,
     ))
 }
 
+/// Serves enum-backed route metadata over stdio.
+///
+/// # Errors
+///
+/// Returns an error when stdio transport setup, request handling, or service
+/// shutdown fails.
 pub async fn serve_capture_routes_stdio<R>() -> Result<(), Box<dyn Error + Send + Sync>>
 where
     R: CaptureRoute + Send + Sync,
@@ -184,6 +218,12 @@ where
     Ok(())
 }
 
+/// Serves registered route metadata over stdio.
+///
+/// # Errors
+///
+/// Returns an error when stdio transport setup, request handling, or service
+/// shutdown fails.
 pub async fn serve_registered_capture_routes_stdio() -> Result<(), Box<dyn Error + Send + Sync>> {
     let service = RegisteredCaptureRoutesServer::new()
         .serve(rmcp::transport::stdio())

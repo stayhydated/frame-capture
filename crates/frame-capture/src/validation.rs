@@ -22,6 +22,13 @@ pub enum CaptureCatalogValidationError {
     MissingMetadata { kind: &'static str, id: String },
 }
 
+/// Validates that a route catalog is internally consistent.
+///
+/// # Errors
+///
+/// Returns [`CaptureCatalogValidationError`] when route ids are duplicated, the
+/// default route is absent, parser output disagrees with typed routes, or route
+/// metadata is incomplete.
 pub fn validate_capture_routes<R: CaptureRoute>() -> Result<(), CaptureCatalogValidationError> {
     let default_id = R::DEFAULT.spec().id();
     if !R::ROUTES.contains(&R::DEFAULT) {
@@ -86,6 +93,12 @@ pub fn validate_capture_routes<R: CaptureRoute>() -> Result<(), CaptureCatalogVa
     Ok(())
 }
 
+/// Validates that a scenario catalog is internally consistent.
+///
+/// # Errors
+///
+/// Returns [`CaptureCatalogValidationError`] when scenario ids are duplicated,
+/// invalid, disagree with parser output, or have incomplete metadata.
 pub fn validate_capture_scenarios<S: CaptureScenario>() -> Result<(), CaptureCatalogValidationError>
 {
     validate_capture_items(

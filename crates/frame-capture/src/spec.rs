@@ -35,6 +35,13 @@ pub struct CaptureRouteInfo {
 }
 
 impl RouteSpec {
+    /// Creates route metadata from a static id, title, and default size.
+    ///
+    /// # Panics
+    ///
+    /// Panics when `id` is empty, absolute, contains an empty component, uses
+    /// `.` or `..`, or contains a backslash. Use [`Self::try_new`] when ids are
+    /// recoverable input.
     pub const fn new(id: &'static str, title: &'static str, default_size: PixelSize) -> Self {
         Self {
             id: CaptureRouteIdRef::new(id),
@@ -43,6 +50,12 @@ impl RouteSpec {
         }
     }
 
+    /// Creates route metadata after validating the route id.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ParseCaptureRouteIdError`] when `id` is not a relative route
+    /// id.
     pub fn try_new(
         id: &'static str,
         title: &'static str,
@@ -73,6 +86,12 @@ impl RouteSpec {
 }
 
 impl CaptureItemSpec {
+    /// Creates scenario or state metadata from a static id and title.
+    ///
+    /// # Panics
+    ///
+    /// Panics when `id` is empty, `.`, `..`, or contains a path separator. Use
+    /// [`Self::try_new`] when ids are recoverable input.
     pub const fn new(id: &'static str, title: &'static str) -> Self {
         Self {
             id: CaptureStateIdRef::new(id),
@@ -81,6 +100,11 @@ impl CaptureItemSpec {
         }
     }
 
+    /// Creates scenario or state metadata after validating the id.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ParseCaptureStateIdError`] when `id` is empty or path-like.
     pub fn try_new(
         id: &'static str,
         title: &'static str,
@@ -92,6 +116,11 @@ impl CaptureItemSpec {
         })
     }
 
+    /// Creates scenario or state metadata with a description.
+    ///
+    /// # Panics
+    ///
+    /// Panics when `id` is empty, `.`, `..`, or contains a path separator.
     pub const fn with_description(
         id: &'static str,
         title: &'static str,

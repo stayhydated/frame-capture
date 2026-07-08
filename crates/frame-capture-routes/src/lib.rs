@@ -96,20 +96,46 @@ pub enum RegisteredRouteError {
 }
 
 pub trait CaptureRoutesEnvExt {
+    /// Reads a registered route session from capture env vars.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`RegisteredRouteError`] when route env vars are invalid, the
+    /// selected route is missing, duplicate route ids exist, or capture settings
+    /// are invalid.
     fn read_registered_session(
         &self,
         default_route: &CaptureRouteId,
     ) -> Result<RegisteredCaptureSession, RegisteredRouteError>;
 
+    /// Reads only the registered capture config when capture mode is requested.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`RegisteredRouteError`] when route lookup or capture settings
+    /// are invalid.
     fn read_registered_capture(
         &self,
         default_route: &CaptureRouteId,
     ) -> Result<Option<CaptureConfig>, RegisteredRouteError>;
 
+    /// Reads a registered route session using a typed route key as the default.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`RegisteredRouteError`] when the route key is invalid, route env
+    /// vars are invalid, the selected route is missing, duplicate route ids
+    /// exist, or capture settings are invalid.
     fn read_registered_session_for<K: RegisteredRouteKey>(
         &self,
     ) -> Result<RegisteredCaptureSession, RegisteredRouteError>;
 
+    /// Reads only the registered capture config for a typed route key.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`RegisteredRouteError`] when the route key, route lookup, or
+    /// capture settings are invalid.
     fn read_registered_capture_for<K: RegisteredRouteKey>(
         &self,
     ) -> Result<Option<CaptureConfig>, RegisteredRouteError>;
@@ -217,12 +243,25 @@ pub fn registered_routes() -> Vec<&'static RegisteredRoute> {
     registered_routes_for::<RegisteredRoute>()
 }
 
+/// Looks up a registered route by id.
+///
+/// # Errors
+///
+/// Returns [`RegisteredRouteError::MissingRoute`] when the id is absent or
+/// [`RegisteredRouteError::DuplicateRoute`] when the id is registered more than
+/// once.
 pub fn registered_route(
     id: &CaptureRouteId,
 ) -> Result<&'static RegisteredRoute, RegisteredRouteError> {
     registered_route_for::<RegisteredRoute>(id)
 }
 
+/// Looks up a registered route by typed route key.
+///
+/// # Errors
+///
+/// Returns [`RegisteredRouteError`] when the key id is invalid, missing, or
+/// registered more than once.
 pub fn registered_route_for_key<K: RegisteredRouteKey>()
 -> Result<&'static RegisteredRoute, RegisteredRouteError> {
     registered_route(&registered_route_key_id::<K>()?)
@@ -237,10 +276,22 @@ where
     routes
 }
 
+/// Validates the global registered-route inventory.
+///
+/// # Errors
+///
+/// Returns [`RegisteredRouteError::DuplicateRoute`] when a route id appears
+/// more than once.
 pub fn validate_registered_routes() -> Result<(), RegisteredRouteError> {
     validate_registered_routes_for::<RegisteredRoute>()
 }
 
+/// Validates a typed registered-route inventory.
+///
+/// # Errors
+///
+/// Returns [`RegisteredRouteError::DuplicateRoute`] when a route id appears
+/// more than once.
 pub fn validate_registered_routes_for<R>() -> Result<(), RegisteredRouteError>
 where
     R: CaptureRouteRegistration + inventory::Collect,
@@ -257,6 +308,13 @@ where
     Ok(())
 }
 
+/// Looks up a typed registered route by id.
+///
+/// # Errors
+///
+/// Returns [`RegisteredRouteError::MissingRoute`] when the id is absent or
+/// [`RegisteredRouteError::DuplicateRoute`] when the id is registered more than
+/// once.
 pub fn registered_route_for<R>(id: &CaptureRouteId) -> Result<&'static R, RegisteredRouteError>
 where
     R: CaptureRouteRegistration + inventory::Collect,
@@ -278,6 +336,13 @@ where
     Ok(route)
 }
 
+/// Reads a typed registered route session from capture env vars.
+///
+/// # Errors
+///
+/// Returns [`RegisteredRouteError`] when route env vars are invalid, the
+/// selected route is missing, duplicate route ids exist, or capture settings are
+/// invalid.
 pub fn read_registered_session_for<R>(
     env: &CaptureEnv,
     default_route: &CaptureRouteId,
@@ -312,6 +377,12 @@ where
     Ok(RegisteredCaptureSessionFor { route, capture })
 }
 
+/// Reads only the typed registered capture config when capture mode is requested.
+///
+/// # Errors
+///
+/// Returns [`RegisteredRouteError`] when route lookup or capture settings are
+/// invalid.
 pub fn read_registered_capture_for<R>(
     env: &CaptureEnv,
     default_route: &CaptureRouteId,
@@ -327,6 +398,12 @@ where
         .map(RegisteredCaptureSessionFor::into_capture)
 }
 
+/// Validates and returns a typed registered-route key id.
+///
+/// # Errors
+///
+/// Returns [`RegisteredRouteError::InvalidRouteId`] when `K::ID` is not a
+/// valid relative route id.
 pub fn registered_route_key_id<K: RegisteredRouteKey>()
 -> Result<CaptureRouteId, RegisteredRouteError> {
     CaptureRouteId::new(K::ID).map_err(|source| RegisteredRouteError::InvalidRouteId {

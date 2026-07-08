@@ -62,6 +62,12 @@ pub enum ParseSizeError {
 }
 
 impl PixelSize {
+    /// Creates a positive pixel size.
+    ///
+    /// # Panics
+    ///
+    /// Panics when either dimension is zero. Use [`Self::try_new`] when zero is
+    /// recoverable input.
     pub const fn new(width: u32, height: u32) -> Self {
         match Self::try_new(width, height) {
             Some(size) => size,
@@ -90,6 +96,12 @@ impl PixelSize {
 }
 
 impl CaptureToml {
+    /// Parses a `frame-capture.toml` document.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CaptureTomlError`] when the source is invalid TOML, omits
+    /// `[default_size]`, omits a required dimension, or uses a zero dimension.
     pub fn parse(source: &str) -> Result<Self, CaptureTomlError> {
         let raw = toml::from_str(source)?;
         let default_size = find_size(&raw)?;
@@ -125,6 +137,12 @@ fn find_size(value: &RawCaptureToml) -> Result<PixelSize, CaptureTomlError> {
     Ok(PixelSize::new(width, height))
 }
 
+/// Parses a `WIDTHxHEIGHT` pixel-size literal.
+///
+/// # Errors
+///
+/// Returns [`ParseSizeError`] when the value omits the separator, contains a
+/// non-integer dimension, or uses a zero dimension.
 pub fn parse_size(value: &str) -> Result<PixelSize, ParseSizeError> {
     let Some((width, height)) = value.split_once('x').or_else(|| value.split_once('X')) else {
         return Err(ParseSizeError::MissingSeparator);

@@ -62,20 +62,46 @@ pub struct RegisteredCaptureSession {
 }
 
 pub trait BevyCaptureRegistryEnvExt {
+    /// Reads a Bevy registered route session from capture env vars.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`RegisteredRouteError`] when route env vars are invalid, the
+    /// selected route is missing, duplicate route ids exist, or capture settings
+    /// are invalid.
     fn read_registered_session(
         &self,
         default_route: &CaptureRouteId,
     ) -> Result<RegisteredCaptureSession, RegisteredRouteError>;
 
+    /// Reads only the Bevy registered capture config when capture mode is requested.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`RegisteredRouteError`] when route lookup or capture settings
+    /// are invalid.
     fn read_registered_capture(
         &self,
         default_route: &CaptureRouteId,
     ) -> Result<Option<CaptureConfig>, RegisteredRouteError>;
 
+    /// Reads a Bevy registered route session using a typed route key.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`RegisteredRouteError`] when the route key is invalid, route env
+    /// vars are invalid, the selected route is missing, duplicate route ids
+    /// exist, or capture settings are invalid.
     fn read_registered_session_for<K: RegisteredRouteKey>(
         &self,
     ) -> Result<RegisteredCaptureSession, RegisteredRouteError>;
 
+    /// Reads only the Bevy registered capture config for a typed route key.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`RegisteredRouteError`] when the route key, route lookup, or
+    /// capture settings are invalid.
     fn read_registered_capture_for<K: RegisteredRouteKey>(
         &self,
     ) -> Result<Option<CaptureConfig>, RegisteredRouteError>;
@@ -167,16 +193,35 @@ pub fn registered_routes() -> Vec<&'static RegisteredRoute> {
     frame_capture_routes::registered_routes_for::<RegisteredRoute>()
 }
 
+/// Validates the Bevy registered-route inventory.
+///
+/// # Errors
+///
+/// Returns [`RegisteredRouteError::DuplicateRoute`] when a route id appears
+/// more than once.
 pub fn validate_registered_routes() -> Result<(), RegisteredRouteError> {
     frame_capture_routes::validate_registered_routes_for::<RegisteredRoute>()
 }
 
+/// Looks up a Bevy registered route by id.
+///
+/// # Errors
+///
+/// Returns [`RegisteredRouteError::MissingRoute`] when the id is absent or
+/// [`RegisteredRouteError::DuplicateRoute`] when the id is registered more than
+/// once.
 pub fn registered_route(
     id: &CaptureRouteId,
 ) -> Result<&'static RegisteredRoute, RegisteredRouteError> {
     frame_capture_routes::registered_route_for::<RegisteredRoute>(id)
 }
 
+/// Looks up a Bevy registered route by typed route key.
+///
+/// # Errors
+///
+/// Returns [`RegisteredRouteError`] when the key id is invalid, missing, or
+/// registered more than once.
 pub fn registered_route_for_key<K>() -> Result<&'static RegisteredRoute, RegisteredRouteError>
 where
     K: RegisteredRouteKey,

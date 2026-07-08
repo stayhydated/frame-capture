@@ -22,6 +22,12 @@ pub trait CaptureRoute: Copy + Eq + Sized + 'static {
 
     fn spec(self) -> RouteSpec;
 
+    /// Parses a route id into a typed route value.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ParseRouteError`] when `value` is not one of the route ids
+    /// exposed by this route catalog.
     fn from_id(value: &str) -> Result<Self, ParseRouteError>;
 
     fn id(self) -> &'static str {
@@ -41,6 +47,12 @@ pub trait CaptureScenario: Copy + Eq + Sized + 'static {
         CaptureScenarioIdRef::new(self.id())
     }
 
+    /// Returns metadata for this scenario.
+    ///
+    /// # Panics
+    ///
+    /// Panics when [`Self::SCENARIO_SPECS`] does not contain metadata for this
+    /// scenario value.
     fn spec(self) -> CaptureItemSpec {
         for variant in Self::SCENARIO_SPECS {
             if variant.value == self {
@@ -51,6 +63,12 @@ pub trait CaptureScenario: Copy + Eq + Sized + 'static {
         panic!("capture scenario is missing from SCENARIO_SPECS")
     }
 
+    /// Parses a scenario id into a typed scenario value.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ParseScenarioError`] when `value` is not one of the scenario
+    /// ids exposed by this scenario catalog.
     fn from_id(value: &str) -> Result<Self, ParseScenarioError>;
 }
 

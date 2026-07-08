@@ -87,7 +87,7 @@ use frame_capture_routes::{CaptureEnv, CaptureRoutesEnvExt as _};
 
 #[frame_capture_routes::capture_route(id = "dashboard", title = "Dashboard", size = "1280x720")]
 fn install_dashboard() {
-    // Select app-owned state, router path, or content for this route.
+    // Select app-owned state or content for this route.
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {

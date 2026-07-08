@@ -77,6 +77,12 @@ pub enum CaptureOutputPathError {
 }
 
 impl CaptureOutputName {
+    /// Creates a PNG output file name.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CaptureOutputPathError`] when `value` is empty, path-like, or
+    /// does not end with `.png`.
     pub fn new(value: impl Into<String>) -> Result<Self, CaptureOutputPathError> {
         Self::try_from(value.into())
     }
@@ -103,6 +109,12 @@ impl CaptureOutputName {
 }
 
 impl CaptureOutputStem {
+    /// Creates a PNG output file stem.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CaptureOutputPathError`] when `value` is empty, path-like, or
+    /// already includes `.png`.
     pub fn new(value: impl Into<String>) -> Result<Self, CaptureOutputPathError> {
         Self::try_from(value.into())
     }
@@ -143,10 +155,22 @@ impl CaptureOutputRoot {
 }
 
 impl CaptureOutputPath {
+    /// Creates a PNG output path.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CaptureOutputPathError`] when the path is empty, has no file
+    /// name, has a non-Unicode file name, or does not end with `.png`.
     pub fn new(value: impl Into<PathBuf>) -> Result<Self, CaptureOutputPathError> {
         Self::try_from(value.into())
     }
 
+    /// Builds an output path from a root directory, route, and PNG file name.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CaptureOutputPathError`] when the joined path is not a valid
+    /// PNG output path.
     pub fn for_name<R: CaptureRoute>(
         root: impl AsRef<Path>,
         route: R,
@@ -155,6 +179,12 @@ impl CaptureOutputPath {
         Self::new(root.as_ref().join(route.id()).join(output.as_str()))
     }
 
+    /// Builds an output path from a root directory, route, and PNG file stem.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CaptureOutputPathError`] when the joined path is not a valid
+    /// PNG output path.
     pub fn for_stem<R: CaptureRoute>(
         root: impl AsRef<Path>,
         route: R,
@@ -364,6 +394,12 @@ impl<'de> Deserialize<'de> for CaptureOutputPath {
     }
 }
 
+/// Builds a route-local PNG output path from a file stem.
+///
+/// # Errors
+///
+/// Returns [`CaptureOutputPathError`] when the joined path is not a valid PNG
+/// output path.
 pub fn capture_output_path_for_stem<R: CaptureRoute>(
     root: impl AsRef<Path>,
     route: R,
@@ -372,6 +408,12 @@ pub fn capture_output_path_for_stem<R: CaptureRoute>(
     CaptureOutputPath::for_stem(root, route, output).map(CaptureOutputPath::into_path_buf)
 }
 
+/// Builds a route-local PNG output path from a file name.
+///
+/// # Errors
+///
+/// Returns [`CaptureOutputPathError`] when the joined path is not a valid PNG
+/// output path.
 pub fn capture_output_path_for_name<R: CaptureRoute>(
     root: impl AsRef<Path>,
     route: R,

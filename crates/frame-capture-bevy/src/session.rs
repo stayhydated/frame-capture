@@ -34,10 +34,22 @@ pub struct BevyCaptureSession<R, S = NoCaptureScenario> {
 }
 
 pub trait BevyCaptureEnvExt {
+    /// Reads a Bevy capture session without scenario support.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CaptureEnvError`] when route or capture env vars are invalid,
+    /// or when a scenario env var is present for this scenario-free session.
     fn read_bevy_session<R>(&self) -> Result<BevyCaptureSession<R>, CaptureEnvError>
     where
         R: CaptureRoute;
 
+    /// Reads a Bevy capture session with typed scenario support.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CaptureEnvError`] when route, scenario, or capture env vars are
+    /// invalid.
     fn read_bevy_session_with_scenario<R, S>(
         &self,
     ) -> Result<BevyCaptureSession<R, S>, CaptureEnvError>
@@ -45,6 +57,12 @@ pub trait BevyCaptureEnvExt {
         R: CaptureRoute,
         S: CaptureScenario;
 
+    /// Reads a Bevy capture session with typed route and scenario inputs.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CaptureEnvError`] when route, scenario, or capture env vars are
+    /// invalid.
     fn read_bevy_session_with_inputs<R, S>(
         &self,
     ) -> Result<BevyCaptureSession<R, S>, CaptureEnvError>

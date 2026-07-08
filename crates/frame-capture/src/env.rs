@@ -141,6 +141,12 @@ pub enum ParseCaptureFrameError {
 }
 
 impl CaptureFrame {
+    /// Creates a positive capture frame number.
+    ///
+    /// # Panics
+    ///
+    /// Panics when `value` is zero. Use [`Self::try_new`] when zero is
+    /// recoverable input.
     pub const fn new(value: u32) -> Self {
         match Self::try_new(value) {
             Some(frame) => frame,
@@ -238,13 +244,23 @@ impl CaptureEnv {
 
     /// Construct a capture env from a shared variable prefix.
     ///
-    /// This panics if the prefix produces an invalid env var name. For error
-    /// recovery use [`Self::try_with_prefix`].
+    /// # Panics
+    ///
+    /// Panics when the prefix produces an invalid env var name. Use
+    /// [`Self::try_with_prefix`] when invalid prefixes are recoverable input.
     pub fn with_prefix(prefix: impl AsRef<str>) -> Self {
-        Self::try_with_prefix(prefix).expect("capture env prefix must produce valid env var names")
+        match Self::try_with_prefix(prefix) {
+            Ok(env) => env,
+            Err(error) => panic!("capture env prefix must produce valid env var names: {error}"),
+        }
     }
 
     /// Construct a capture env from a shared variable prefix.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ParseCaptureEnvVarError`] when any generated env var name is
+    /// empty, contains `=`, or contains NUL.
     pub fn try_with_prefix(prefix: impl AsRef<str>) -> Result<Self, ParseCaptureEnvVarError> {
         Ok(Self::builder().prefix(prefix)?.build())
     }
@@ -277,6 +293,12 @@ impl CaptureEnv {
         env::var_os(self.path_var()).is_some()
     }
 
+    /// Reads the selected route from the route env var, or returns the default.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CaptureEnvError`] when the env var is not Unicode or does not
+    /// parse as one of `R`'s route ids.
     pub fn read_route<R: CaptureRoute>(&self) -> Result<R, CaptureEnvError> {
         let Some(value) = read_env_string(&self.route_var)? else {
             return Ok(R::DEFAULT);
@@ -288,6 +310,12 @@ impl CaptureEnv {
         })
     }
 
+    /// Reads a route id from the route env var, or returns `default`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CaptureEnvError`] when the env var is not Unicode or is not a
+    /// valid relative route id.
     pub fn read_route_id_or(
         &self,
         default: &CaptureRouteId,
@@ -304,6 +332,12 @@ impl CaptureEnv {
             })
     }
 
+    /// Reads the optional selected scenario from the scenario env var.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CaptureEnvError`] when the env var is not Unicode or does not
+    /// parse as one of `S`'s scenario ids.
     pub fn read_scenario<S: CaptureScenario>(&self) -> Result<Option<S>, CaptureEnvError> {
         let Some(value) = read_env_string(&self.scenario_var)? else {
             return Ok(None);
@@ -317,10 +351,23 @@ impl CaptureEnv {
             })
     }
 
+    /// Reads the optional selected scenario id from the scenario env var.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CaptureEnvError`] when the env var is not Unicode or is not a
+    /// valid scenario id.
     pub fn read_scenario_id(&self) -> Result<Option<CaptureScenarioId>, CaptureEnvError> {
         self.read_optional_scenario_id(&self.scenario_var)
     }
 
+    /// Reads capture output, frame, and size settings.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CaptureEnvError`] when capture env vars are not Unicode,
+    /// contain invalid integers, define only one size dimension, use zero
+    /// dimensions, or provide an invalid output path.
     pub fn read_capture(
         &self,
         default_size: PixelSize,
@@ -340,6 +387,11 @@ impl CaptureEnv {
             })
     }
 
+    /// Reads a typed route session from the capture environment.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CaptureEnvError`] when route or capture env vars are invalid.
     pub fn read_session<R: CaptureRoute>(&self) -> Result<CaptureSession<R>, CaptureEnvError> {
         let route = self.read_route::<R>()?;
         let capture = self.read_capture(route.spec().default_size())?;
@@ -347,6 +399,12 @@ impl CaptureEnv {
         Ok(CaptureSession::new(route, capture))
     }
 
+    /// Reads a typed route and scenario input session from the capture environment.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CaptureEnvError`] when route, scenario, or capture env vars are
+    /// invalid.
     pub fn read_session_with_scenario<R, S>(
         &self,
     ) -> Result<CaptureInputSession<R, S>, CaptureEnvError>
@@ -357,6 +415,12 @@ impl CaptureEnv {
         self.read_session_with_inputs::<R, S>()
     }
 
+    /// Reads a typed route and scenario input session from the capture environment.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CaptureEnvError`] when route, scenario, or capture env vars are
+    /// invalid.
     pub fn read_session_with_inputs<R, S>(
         &self,
     ) -> Result<CaptureInputSession<R, S>, CaptureEnvError>
@@ -456,6 +520,10 @@ impl Default for CaptureEnv {
     }
 }
 
+#[allow(
+    clippy::missing_errors_doc,
+    reason = "bon generates public builder setter methods for fallible field conversions"
+)]
 #[bon::bon]
 impl CaptureLaunchEnv {
     #[builder(
@@ -515,6 +583,11 @@ impl CaptureLaunchEnv {
     }
 
     /// Parse a route id and create a route-only launch environment.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CaptureLaunchEnvError`] when `route_id` is not a valid
+    /// relative route id.
     pub fn try_new(route_id: impl Into<String>) -> Result<Self, CaptureLaunchEnvError> {
         Ok(Self::builder().route_id(route_id)?.build())
     }
@@ -550,6 +623,11 @@ impl CaptureLaunchEnv {
     }
 
     /// Validate a complete width and height override.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CaptureLaunchEnvError::InvalidSize`] when either dimension is
+    /// zero.
     pub fn try_size(width: u32, height: u32) -> Result<PixelSize, CaptureLaunchEnvError> {
         PixelSize::try_new(width, height)
             .ok_or(CaptureLaunchEnvError::InvalidSize { width, height })
@@ -559,6 +637,12 @@ impl CaptureLaunchEnv {
     ///
     /// Width and height must both be present and greater than zero, or both
     /// absent.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CaptureLaunchEnvError::PartialSize`] when only one dimension
+    /// is present, or [`CaptureLaunchEnvError::InvalidSize`] when either
+    /// present dimension is zero.
     pub fn optional_size(
         width: Option<u32>,
         height: Option<u32>,
@@ -656,6 +740,12 @@ impl CaptureLaunchEnvVar {
 }
 
 impl CaptureEnvBuilder {
+    /// Sets all capture env var names from a shared prefix.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ParseCaptureEnvVarError`] when any generated env var name is
+    /// empty, contains `=`, or contains NUL.
     pub fn prefix(mut self, prefix: impl AsRef<str>) -> Result<Self, ParseCaptureEnvVarError> {
         let prefix = prefix.as_ref();
         self.env.route_var = CaptureEnvVar::new(format!("{prefix}_CAPTURE_ROUTE"))?;
@@ -667,31 +757,67 @@ impl CaptureEnvBuilder {
         Ok(self)
     }
 
+    /// Sets the route env var name.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ParseCaptureEnvVarError`] when `value` is not a valid env var
+    /// name.
     pub fn route_var(mut self, value: impl Into<String>) -> Result<Self, ParseCaptureEnvVarError> {
         self.env.route_var = CaptureEnvVar::new(value)?;
         Ok(self)
     }
 
+    /// Sets the output path env var name.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ParseCaptureEnvVarError`] when `value` is not a valid env var
+    /// name.
     pub fn path_var(mut self, value: impl Into<String>) -> Result<Self, ParseCaptureEnvVarError> {
         self.env.path_var = CaptureEnvVar::new(value)?;
         Ok(self)
     }
 
+    /// Sets the capture frame env var name.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ParseCaptureEnvVarError`] when `value` is not a valid env var
+    /// name.
     pub fn frame_var(mut self, value: impl Into<String>) -> Result<Self, ParseCaptureEnvVarError> {
         self.env.frame_var = CaptureEnvVar::new(value)?;
         Ok(self)
     }
 
+    /// Sets the capture width env var name.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ParseCaptureEnvVarError`] when `value` is not a valid env var
+    /// name.
     pub fn width_var(mut self, value: impl Into<String>) -> Result<Self, ParseCaptureEnvVarError> {
         self.env.width_var = CaptureEnvVar::new(value)?;
         Ok(self)
     }
 
+    /// Sets the capture height env var name.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ParseCaptureEnvVarError`] when `value` is not a valid env var
+    /// name.
     pub fn height_var(mut self, value: impl Into<String>) -> Result<Self, ParseCaptureEnvVarError> {
         self.env.height_var = CaptureEnvVar::new(value)?;
         Ok(self)
     }
 
+    /// Sets the scenario env var name.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ParseCaptureEnvVarError`] when `value` is not a valid env var
+    /// name.
     pub fn scenario_var(
         mut self,
         value: impl Into<String>,

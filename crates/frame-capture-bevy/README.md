@@ -9,7 +9,7 @@ save a deterministic screenshot when capture variables are present.
 
 ```toml
 [dependencies]
-bevy = "0.18"
+bevy = "0.19"
 frame-capture-bevy = "0.1"
 ```
 

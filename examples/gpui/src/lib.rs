@@ -7,15 +7,6 @@ pub enum GpuiExampleRoute {
     Review,
 }
 
-impl GpuiExampleRoute {
-    pub const fn path(self) -> &'static str {
-        match self {
-            Self::Dashboard => "/dashboard",
-            Self::Review => "/review",
-        }
-    }
-}
-
 #[derive(frame_capture_routes::CaptureScenarioRoutes, Clone, Copy, Debug, Eq, PartialEq)]
 pub enum GpuiExampleScenario {
     #[capture_scenario(id = "default", title = "Default State")]

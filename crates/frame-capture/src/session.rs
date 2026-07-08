@@ -30,6 +30,12 @@ impl CaptureConfig {
         Self { path, frame, size }
     }
 
+    /// Creates a capture config after validating the output path.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CaptureOutputPathError`] when `path` is empty, lacks a `.png`
+    /// file name, or contains a non-Unicode file name.
     pub fn try_new(
         path: impl Into<PathBuf>,
         frame: CaptureFrame,

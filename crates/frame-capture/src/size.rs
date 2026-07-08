@@ -56,6 +56,12 @@ pub enum ParsePixelSizeError {
 }
 
 impl PixelSize {
+    /// Creates a positive pixel size.
+    ///
+    /// # Panics
+    ///
+    /// Panics when either dimension is zero. Use [`Self::try_new`] when zero is
+    /// recoverable input.
     pub const fn new(width: u32, height: u32) -> Self {
         match Self::try_new(width, height) {
             Some(size) => size,
@@ -90,6 +96,12 @@ impl PixelSize {
         (self.width(), self.height())
     }
 
+    /// Scales `default_size` so its longest edge equals `long_edge`.
+    ///
+    /// # Panics
+    ///
+    /// This function relies on `long_edge` being nonzero and clamps scaled
+    /// dimensions to at least one pixel, so it does not panic for valid inputs.
     pub fn from_long_edge(default_size: Self, long_edge: NonZeroU32) -> Self {
         let long_edge = long_edge.get();
         if default_size.width() >= default_size.height() {

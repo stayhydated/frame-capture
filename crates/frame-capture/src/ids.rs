@@ -184,6 +184,13 @@ impl koruma::Validate<&str> for RouteIdValueValidator {
 }
 
 impl CaptureRouteIdRef {
+    /// Creates a static relative route id.
+    ///
+    /// # Panics
+    ///
+    /// Panics when `value` is empty, absolute, contains an empty component,
+    /// uses `.` or `..`, or contains a backslash. Use [`Self::try_new`] when
+    /// invalid ids are recoverable input.
     pub const fn new(value: &'static str) -> Self {
         if !is_valid_route_id_const(value) {
             panic!("route id must be a relative route id");
@@ -192,6 +199,12 @@ impl CaptureRouteIdRef {
         Self(value)
     }
 
+    /// Creates a static relative route id after validation.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ParseCaptureRouteIdError`] when `value` is not a valid
+    /// relative route id.
     pub fn try_new(value: &'static str) -> Result<Self, ParseCaptureRouteIdError> {
         validate_route_id(value)?;
         Ok(Self(value))
@@ -203,6 +216,12 @@ impl CaptureRouteIdRef {
 }
 
 impl CaptureStateIdRef {
+    /// Creates a static state id.
+    ///
+    /// # Panics
+    ///
+    /// Panics when `value` is empty, `.`, `..`, or contains a path separator.
+    /// Use [`Self::try_new`] when invalid ids are recoverable input.
     pub const fn new(value: &'static str) -> Self {
         if !is_valid_state_id_const(value) {
             panic!("capture state id must be an id, not a path");
@@ -211,6 +230,11 @@ impl CaptureStateIdRef {
         Self(value)
     }
 
+    /// Creates a static state id after validation.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ParseCaptureStateIdError`] when `value` is empty or path-like.
     pub fn try_new(value: &'static str) -> Result<Self, ParseCaptureStateIdError> {
         validate_state_id(value)?;
         Ok(Self(value))
@@ -222,6 +246,12 @@ impl CaptureStateIdRef {
 }
 
 impl CaptureScenarioIdRef {
+    /// Creates a static scenario id.
+    ///
+    /// # Panics
+    ///
+    /// Panics when `value` is empty, `.`, `..`, or contains a path separator.
+    /// Use [`Self::try_new`] when invalid ids are recoverable input.
     pub const fn new(value: &'static str) -> Self {
         if !is_valid_state_id_const(value) {
             panic!("capture scenario id must be an id, not a path");
@@ -230,6 +260,11 @@ impl CaptureScenarioIdRef {
         Self(value)
     }
 
+    /// Creates a static scenario id after validation.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ParseCaptureStateIdError`] when `value` is empty or path-like.
     pub fn try_new(value: &'static str) -> Result<Self, ParseCaptureStateIdError> {
         validate_state_id(value)?;
         Ok(Self(value))
@@ -241,6 +276,12 @@ impl CaptureScenarioIdRef {
 }
 
 impl CaptureRouteId {
+    /// Creates an owned relative route id.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ParseCaptureRouteIdError`] when `value` is not a valid
+    /// relative route id.
     pub fn new(value: impl Into<String>) -> Result<Self, ParseCaptureRouteIdError> {
         Self::try_from(value.into())
     }
@@ -255,6 +296,11 @@ impl CaptureRouteId {
 }
 
 impl CaptureStateId {
+    /// Creates an owned state id.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ParseCaptureStateIdError`] when `value` is empty or path-like.
     pub fn new(value: impl Into<String>) -> Result<Self, ParseCaptureStateIdError> {
         Self::try_from(value.into())
     }
@@ -269,6 +315,11 @@ impl CaptureStateId {
 }
 
 impl CaptureScenarioId {
+    /// Creates an owned scenario id.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ParseCaptureStateIdError`] when `value` is empty or path-like.
     pub fn new(value: impl Into<String>) -> Result<Self, ParseCaptureStateIdError> {
         Self::try_from(value.into())
     }
@@ -283,6 +334,12 @@ impl CaptureScenarioId {
 }
 
 impl CaptureEnvVar {
+    /// Creates an owned environment variable name.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ParseCaptureEnvVarError`] when `value` is empty, contains `=`,
+    /// or contains NUL.
     pub fn new(value: impl Into<String>) -> Result<Self, ParseCaptureEnvVarError> {
         Self::try_from(value.into())
     }

@@ -19,8 +19,8 @@ rust-version = "1.96"
 version = "0.1.0"
 
 [workspace.dependencies]
-bevy = { default-features = false, version = "0.18" }
-bevy_app = { default-features = false, version = "0.18" }
+bevy = { default-features = false, version = "0.19" }
+bevy_app = { default-features = false, version = "0.19" }
 bon = "3.9"
 darling = "0.23"
 derive_more = { default-features = false, features = [
@@ -33,7 +33,7 @@ fs-err = "3.3"
 heck = "0.5"
 image = { default-features = false, features = [ "png" ], version = "0.25" }
 inventory = "0.3"
-koruma = { default-features = false, path = "../koruma/crates/koruma", version = "0.9.0" }
+koruma = { default-features = false, path = "../koruma/crates/koruma", version = "0.10.0" }
 proc-macro2 = "1.0"
 quote = "1.0"
 rmcp = { default-features = false, features = [
@@ -67,13 +67,22 @@ opt-level = 3
 
 [profile.release]
 codegen-units = 1
-lto = true
+lto = "thin"
 opt-level = 3
 
 [workspace.lints.rust]
-unexpected_cfgs = { level = "deny" }
+future_incompatible = "deny"
+nonstandard_style = "deny"
+unexpected_cfgs = { level = "deny", check-cfg = ["cfg(coverage)"] }
+unsafe_op_in_unsafe_fn = "deny"
+unused_must_use = "deny"
+
+[workspace.lints.rustdoc]
+bare_urls = "deny"
+broken_intra_doc_links = "deny"
 
 [workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
 dbg_macro = "deny"
 derive_partial_eq_without_eq = "warn"
 err_expect = "warn"

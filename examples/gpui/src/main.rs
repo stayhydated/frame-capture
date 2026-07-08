@@ -1,38 +1,25 @@
 use std::error::Error;
 
-use gpui::*;
-use gpui_component::{Root, badge::Badge, h_flex, progress::Progress, v_flex};
-use gpui_router::{
-    IntoLayout, NavLink, Outlet, Route, RouterState, Routes, init as router_init, use_location,
-};
-use image::{RgbaImage, imageops::FilterType};
 use frame_capture_example_gpui::{GpuiExampleRoute, GpuiExampleScenario};
 use frame_capture_routes::{
     CaptureConfig, CaptureEnv, CaptureRoute as _, CaptureScenario as _, PixelSize,
 };
+use gpui::*;
+use gpui_component::{Root, badge::Badge, h_flex, progress::Progress, v_flex};
+use image::{RgbaImage, imageops::FilterType};
 
 #[derive(Clone, Copy)]
 struct RouteSummary {
+    route: GpuiExampleRoute,
     id: &'static str,
     title: &'static str,
-    path: &'static str,
     size: PixelSize,
 }
 
 struct ExampleApp {
     capture: Option<CaptureConfig>,
-    initial_route: GpuiExampleRoute,
+    active_route: GpuiExampleRoute,
     scenario: Option<GpuiExampleScenario>,
-    routes: Vec<RouteSummary>,
-    size: PixelSize,
-}
-
-#[derive(IntoElement, IntoLayout)]
-struct CaptureLayout {
-    capture: Option<CaptureConfig>,
-    initial_route: GpuiExampleRoute,
-    scenario: Option<GpuiExampleScenario>,
-    outlet: Outlet,
     routes: Vec<RouteSummary>,
     size: PixelSize,
 }
@@ -63,16 +50,14 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let app = gpui_platform::application();
     app.run(move |cx: &mut App| {
-        router_init(cx);
         gpui_component::init(cx);
-        RouterState::global_mut(cx).with_path(route.path().into());
         cx.activate(true);
 
         let options = window_options(title, size, cx);
         cx.open_window(options, |window, cx| {
             let view = cx.new(|_| ExampleApp {
                 capture,
-                initial_route: route,
+                active_route: route,
                 scenario,
                 routes,
                 size,
@@ -114,75 +99,20 @@ impl From<GpuiExampleRoute> for RouteSummary {
     fn from(route: GpuiExampleRoute) -> Self {
         let spec = route.spec();
         Self {
+            route,
             id: spec.id(),
             title: spec.title(),
-            path: route.path(),
             size: spec.default_size(),
         }
     }
 }
 
 impl Render for ExampleApp {
-    fn render(&mut self, _window: &mut Window, _cx: &mut Context<Self>) -> impl IntoElement {
-        let scenario = self.scenario;
-
-        div().size_full().child(
-            Routes::new().child(
-                Route::new()
-                    .layout(CaptureLayout::new(
-                        self.routes.clone(),
-                        self.capture.clone(),
-                        self.initial_route,
-                        self.scenario,
-                        self.size,
-                    ))
-                    .child(
-                        Route::new()
-                            .index()
-                            .element(move |_, _| dashboard_page(scenario)),
-                    )
-                    .child(
-                        Route::new()
-                            .path("dashboard")
-                            .element(move |_, _| dashboard_page(scenario)),
-                    )
-                    .child(
-                        Route::new()
-                            .path("review")
-                            .element(move |_, _| review_page(scenario)),
-                    )
-                    .child(
-                        Route::new()
-                            .path("{*not_found}")
-                            .element(|_, _| not_found_page()),
-                    ),
-            ),
-        )
-    }
-}
-
-impl CaptureLayout {
-    fn new(
-        routes: Vec<RouteSummary>,
-        capture: Option<CaptureConfig>,
-        initial_route: GpuiExampleRoute,
-        scenario: Option<GpuiExampleScenario>,
-        size: PixelSize,
-    ) -> Self {
-        Self {
-            capture,
-            initial_route,
-            scenario,
-            outlet: Outlet::new(),
-            routes,
-            size,
+    fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        let mut route_items = Vec::with_capacity(self.routes.len());
+        for route in self.routes.iter().copied() {
+            route_items.push(route_nav_item(route, self.active_route, cx).into_any_element());
         }
-    }
-}
-
-impl RenderOnce for CaptureLayout {
-    fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
-        let pathname = use_location(cx).pathname.to_string();
 
         div()
             .flex()
@@ -202,7 +132,7 @@ impl RenderOnce for CaptureLayout {
                             .font_weight(FontWeight::BOLD)
                             .child("Routes"),
                     )
-                    .children(self.routes.iter().copied().map(route_nav_link))
+                    .children(route_items)
                     .child(div().flex_1())
                     .child(capture_status(self.capture.as_ref())),
             )
@@ -231,8 +161,8 @@ impl RenderOnce for CaptureLayout {
                                             .gap_1()
                                             .child(div().text_sm().text_color(rgb(0x68635c)).child(
                                                 format!(
-                                                    "{} at {} via gpui-router path {pathname}",
-                                                    self.initial_route.id(),
+                                                    "{} at {}",
+                                                    self.active_route.id(),
                                                     self.size,
                                                 ),
                                             ))
@@ -260,32 +190,53 @@ impl RenderOnce for CaptureLayout {
                                 ),
                             ),
                     )
-                    .child(div().flex_1().p_5().child(self.outlet)),
+                    .child(
+                        div()
+                            .flex_1()
+                            .p_5()
+                            .child(route_page(self.active_route, self.scenario)),
+                    ),
             )
     }
 }
 
-fn route_nav_link(route: RouteSummary) -> impl IntoElement {
-    NavLink::new()
-        .to(route.path)
-        .end(true)
-        .active(|style| {
-            style
-                .bg(rgb(0xf4b860))
-                .text_color(rgb(0x1f2526))
-                .font_weight(FontWeight::BOLD)
-        })
+fn route_nav_item(
+    route: RouteSummary,
+    active_route: GpuiExampleRoute,
+    cx: &mut Context<ExampleApp>,
+) -> impl IntoElement + 'static {
+    let mut item = div()
+        .id(ElementId::from(format!("route-nav-{}", route.id)))
         .rounded_md()
         .px_3()
-        .py_2()
-        .child(
-            v_flex().gap_1().child(route.title).child(
-                div()
-                    .text_xs()
-                    .text_color(rgb(0xc9d4cf))
-                    .child(format!("{}  {}", route.id, route.size)),
-            ),
-        )
+        .py_2();
+
+    if route.route == active_route {
+        item = item
+            .bg(rgb(0xf4b860))
+            .text_color(rgb(0x1f2526))
+            .font_weight(FontWeight::BOLD);
+    }
+
+    item.on_click(cx.listener(move |this, _, _, cx| {
+        this.active_route = route.route;
+        cx.notify();
+    }))
+    .child(
+        v_flex().gap_1().child(route.title).child(
+            div()
+                .text_xs()
+                .text_color(rgb(0xc9d4cf))
+                .child(format!("{}  {}", route.id, route.size)),
+        ),
+    )
+}
+
+fn route_page(route: GpuiExampleRoute, scenario: Option<GpuiExampleScenario>) -> AnyElement {
+    match route {
+        GpuiExampleRoute::Dashboard => dashboard_page(scenario).into_any_element(),
+        GpuiExampleRoute::Review => review_page(scenario).into_any_element(),
+    }
 }
 
 fn capture_status(capture: Option<&CaptureConfig>) -> impl IntoElement {
@@ -358,12 +309,12 @@ fn dashboard_page(scenario: Option<GpuiExampleScenario>) -> impl IntoElement {
                 .border_color(rgb(0xd5d0c7))
                 .bg(rgb(0xffffff))
                 .p_4()
-                .child(div().font_weight(FontWeight::BOLD).child("Router state"))
+                .child(div().font_weight(FontWeight::BOLD).child("Route state"))
                 .child(
                     div()
                         .mt_2()
                         .text_color(rgb(0x625d56))
-                        .child("The capture route installed /dashboard before the window opened."),
+                        .child("The selected capture route is the Dashboard enum variant."),
                 )
                 .child(
                     Progress::new("dashboard-capture-progress")
@@ -429,22 +380,6 @@ fn review_page(scenario: Option<GpuiExampleScenario>) -> impl IntoElement {
         )
 }
 
-fn not_found_page() -> impl IntoElement {
-    v_flex()
-        .gap_3()
-        .child(
-            div()
-                .text_2xl()
-                .font_weight(FontWeight::BOLD)
-                .child("Not Found"),
-        )
-        .child(
-            NavLink::new()
-                .to("/dashboard")
-                .child(div().underline().child("Back to dashboard")),
-        )
-}
-
 fn scenario_name(scenario: Option<GpuiExampleScenario>) -> &'static str {
     scenario
         .map(|scenario| scenario.spec().title())
@@ -495,9 +430,7 @@ fn save_native_capture(
     );
 
     cx.update(|cx| {
-        router_init(cx);
         gpui_component::init(cx);
-        RouterState::global_mut(cx).with_path(route.path().into());
     });
 
     let capture_for_view = capture.clone();
@@ -507,7 +440,7 @@ fn save_native_capture(
         move |window, cx| {
             let view = cx.new(|_| ExampleApp {
                 capture: Some(capture_for_view),
-                initial_route: route,
+                active_route: route,
                 scenario,
                 routes,
                 size,
@@ -545,8 +478,8 @@ fn normalize_capture_screenshot(mut image: RgbaImage, size: PixelSize) -> RgbaIm
 
 #[cfg(test)]
 mod tests {
-    use image::RgbaImage;
     use frame_capture_routes::CaptureEnv;
+    use image::RgbaImage;
 
     #[test]
     fn capture_env_width_and_height_override_route_default() {
