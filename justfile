@@ -36,7 +36,7 @@ example-captures:
 example-gpui:
     cargo run --manifest-path examples/gpui/Cargo.toml
 
-# Requires macOS in the pinned GPUI revision; live mode still runs elsewhere.
+# Uses the headless renderer from the forked Zed/GPUI linux-headless-renderer branch.
 example-gpui-captures:
     FRAME_CAPTURE_ROUTE=gpui/dashboard FRAME_CAPTURE_PATH=examples/gpui/captures/gpui/dashboard/current.png cargo run --manifest-path examples/gpui/Cargo.toml
     FRAME_CAPTURE_ROUTE=gpui/review FRAME_CAPTURE_PATH=examples/gpui/captures/gpui/review/current.png cargo run --manifest-path examples/gpui/Cargo.toml

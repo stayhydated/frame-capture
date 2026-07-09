@@ -356,10 +356,8 @@ cargo run --manifest-path examples/gpui/Cargo.toml
 ```
 
 The GPUI example is kept outside the default workspace so normal workspace
-checks do not compile the pinned Zed/GPUI dependency graph. The
-`just example-gpui-captures` recipe runs GPUI through
+checks do not compile the forked Zed/GPUI `linux-headless-renderer` dependency
+graph. The `just example-gpui-captures` recipe runs GPUI through
 `cargo run --manifest-path examples/gpui/Cargo.toml`, so it does not make GPUI a
-workspace dependency. On macOS, use `just example-gpui-captures` when you want
-to regenerate captures with GPUI's native `test-support` headless renderer. In
-the pinned GPUI revision, `gpui_platform::current_headless_renderer()` is only
-implemented for macOS; non-macOS hosts can still check and run the example live.
+workspace dependency. Use `just example-gpui-captures` to regenerate captures
+with GPUI's `test-support` headless renderer.

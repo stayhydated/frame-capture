@@ -404,7 +404,6 @@ fn metric(title: &'static str, value: &'static str, color: Rgba) -> impl IntoEle
         )
 }
 
-// #[cfg(target_os = "macos")]
 fn save_native_capture(
     route: GpuiExampleRoute,
     scenario: Option<GpuiExampleScenario>,
