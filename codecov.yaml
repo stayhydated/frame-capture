@@ -1,0 +1,54 @@
+codecov:
+  require_ci_to_pass: true
+
+# https://docs.codecov.com/docs/components
+component_management:
+  individual_components:
+    - component_id: frame-capture
+      name: "frame-capture"
+      paths:
+        - crates/frame-capture/**
+
+    - component_id: frame-capture-bevy
+      name: "frame-capture-bevy"
+      paths:
+        - crates/frame-capture-bevy/**
+
+    - component_id: frame-capture-macros
+      name: "frame-capture-macros"
+      paths:
+        - crates/frame-capture-macros/**
+
+    - component_id: frame-capture-mcp
+      name: "frame-capture-mcp"
+      paths:
+        - crates/frame-capture-mcp/**
+
+    - component_id: frame-capture-routes
+      name: "frame-capture-routes"
+      paths:
+        - crates/frame-capture-routes/**
+
+    - component_id: frame-capture-routes-bevy
+      name: "frame-capture-routes-bevy"
+      paths:
+        - crates/frame-capture-routes-bevy/**
+
+    - component_id: frame-capture-toml
+      name: "frame-capture-toml"
+      paths:
+        - crates/frame-capture-toml/**
+
+coverage:
+  precision: 2
+  round: down
+  range: "90...100"
+  status:
+    project:
+      default:
+        target: 90%
+        threshold: 5%
+    patch:
+      default:
+        target: 90%
+        threshold: 10%

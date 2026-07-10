@@ -339,6 +339,30 @@ mod tests {
                 ..
             })
         ));
+
+        assert_eq!(
+            TestRoute::from_id("missing").unwrap_err().value(),
+            "missing"
+        );
+        assert_eq!(MissingDefaultRoute::Settings.spec().id(), "settings");
+        assert_eq!(
+            MissingDefaultRoute::from_id("settings"),
+            Ok(MissingDefaultRoute::Settings)
+        );
+        assert!(MissingDefaultRoute::from_id("missing").is_err());
+        assert!(DuplicateScenario::from_id("missing").is_err());
+        assert_eq!(MissingRouteMetadata::Settings.spec().id(), "settings");
+        assert_eq!(
+            MissingRouteMetadata::from_id("settings"),
+            Ok(MissingRouteMetadata::Settings)
+        );
+        assert!(MissingRouteMetadata::from_id("missing").is_err());
+        assert_eq!(MissingScenarioMetadata::LedOff.id(), "led-off");
+        assert_eq!(
+            MissingScenarioMetadata::from_id("led-off"),
+            Ok(MissingScenarioMetadata::LedOff)
+        );
+        assert!(MissingScenarioMetadata::from_id("missing").is_err());
     }
 
     #[test]

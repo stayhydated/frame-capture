@@ -232,6 +232,9 @@ width = 1280
 
     #[test]
     fn maps_zero_sizes_to_existing_toml_errors() {
+        assert_eq!(PixelSize::try_new(0, 1), None);
+        assert_eq!(PixelSize::try_new(1, 0), None);
+        assert!(std::panic::catch_unwind(|| PixelSize::new(0, 1)).is_err());
         assert!(matches!(
             CaptureToml::parse(
                 r#"

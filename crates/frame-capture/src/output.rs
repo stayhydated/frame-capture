@@ -467,3 +467,132 @@ fn validate_output_path(value: &Path) -> Result<(), CaptureOutputPathError> {
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use std::{borrow::Borrow as _, path::Path};
+
+    use super::*;
+
+    #[test]
+    fn output_names_and_stems_cover_named_conversions() {
+        let stem = CaptureOutputStem::try_from("review").unwrap();
+        let stem_borrowed: &str = stem.borrow();
+        assert_eq!(stem_borrowed, "review");
+        assert_eq!(String::from(stem.clone()), "review");
+        assert_eq!("review".parse::<CaptureOutputStem>().unwrap(), stem);
+        assert_eq!(CaptureOutputStem::current().as_str(), "current");
+        assert_eq!(CaptureOutputStem::reference().into_string(), "reference");
+
+        let name = CaptureOutputName::from_stem(&stem);
+        let name_borrowed: &str = name.borrow();
+        assert_eq!(name_borrowed, "review.png");
+        assert_eq!(String::from(name.clone()), "review.png");
+        assert_eq!("review.png".parse::<CaptureOutputName>().unwrap(), name);
+        assert_eq!(CaptureOutputName::try_from("review.png").unwrap(), name);
+        assert_eq!(CaptureOutputName::current().as_str(), "current.png");
+        assert_eq!(
+            CaptureOutputName::reference().into_string(),
+            "reference.png"
+        );
+    }
+
+    #[test]
+    fn output_name_and_stem_validation_reports_each_contract_error() {
+        assert_eq!(
+            CaptureOutputName::new(""),
+            Err(CaptureOutputPathError::Empty)
+        );
+        assert_eq!(
+            CaptureOutputName::new("."),
+            Err(CaptureOutputPathError::PathComponent)
+        );
+        assert_eq!(
+            CaptureOutputName::new("review"),
+            Err(CaptureOutputPathError::MissingExtension)
+        );
+        assert_eq!(
+            CaptureOutputStem::new(""),
+            Err(CaptureOutputPathError::Empty)
+        );
+        assert_eq!(
+            CaptureOutputStem::new(".."),
+            Err(CaptureOutputPathError::PathComponent)
+        );
+        assert_eq!(
+            CaptureOutputStem::new("review.png"),
+            Err(CaptureOutputPathError::Extension)
+        );
+    }
+
+    #[test]
+    fn output_roots_support_path_and_serde_conversions() {
+        let root = CaptureOutputRoot::default();
+        let borrowed: &Path = root.borrow();
+        assert_eq!(borrowed, Path::new("captures"));
+        assert_eq!(root.to_string(), "captures");
+        assert_eq!(PathBuf::from(root.clone()), PathBuf::from("captures"));
+        assert_eq!(
+            "reference".parse::<CaptureOutputRoot>().unwrap().as_path(),
+            Path::new("reference")
+        );
+        assert_eq!(serde_json::to_string(&root).unwrap(), r#""captures""#);
+        assert_eq!(
+            serde_json::from_str::<CaptureOutputRoot>(r#""reference""#)
+                .unwrap()
+                .into_path_buf(),
+            PathBuf::from("reference")
+        );
+    }
+
+    #[test]
+    fn output_paths_support_path_and_serde_conversions() {
+        let path = CaptureOutputPath::try_from(Path::new("captures/review.png")).unwrap();
+        let borrowed: &Path = path.borrow();
+        assert_eq!(borrowed, Path::new("captures/review.png"));
+        assert_eq!(path, PathBuf::from("captures/review.png"));
+        assert_eq!(PathBuf::from("captures/review.png"), path);
+        assert_eq!(
+            "captures/review.png".parse::<CaptureOutputPath>().unwrap(),
+            path
+        );
+        assert_eq!(
+            serde_json::to_string(&path).unwrap(),
+            r#""captures/review.png""#
+        );
+        assert_eq!(
+            serde_json::from_str::<CaptureOutputPath>(r#""captures/review.png""#).unwrap(),
+            path
+        );
+        assert_eq!(PathBuf::from(path), PathBuf::from("captures/review.png"));
+    }
+
+    #[test]
+    fn output_paths_reject_invalid_file_paths() {
+        assert_eq!(
+            CaptureOutputPath::new(""),
+            Err(CaptureOutputPathError::Empty)
+        );
+        assert_eq!(
+            CaptureOutputPath::new("/"),
+            Err(CaptureOutputPathError::PathComponent)
+        );
+        assert_eq!(
+            CaptureOutputPath::new("capture.jpg"),
+            Err(CaptureOutputPathError::MissingExtension)
+        );
+        assert!(serde_json::from_str::<CaptureOutputPath>(r#""capture.jpg""#).is_err());
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn output_paths_reject_non_unicode_file_names() {
+        use std::{ffi::OsString, os::unix::ffi::OsStringExt as _};
+
+        let path = PathBuf::from(OsString::from_vec(vec![0xff]));
+        assert_eq!(
+            CaptureOutputPath::new(path),
+            Err(CaptureOutputPathError::NotUnicode)
+        );
+    }
+}

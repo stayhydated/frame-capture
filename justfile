@@ -19,7 +19,11 @@ test:
     cargo test --workspace --all-features --all-targets --locked
 
 cov:
-    cargo llvm-cov --workspace --all-features --all-targets
+    cargo llvm-cov clean --workspace
+    cargo llvm-cov --workspace --all-features --all-targets --no-report
+    FRAME_CAPTURE_ROUTE=bevy/dashboard FRAME_CAPTURE_PATH=target/coverage-dashboard.png FRAME_CAPTURE_SCENARIO=alert cargo llvm-cov --no-report run -p frame-capture-example-bevy
+    FRAME_CAPTURE_ROUTE=bevy/detail FRAME_CAPTURE_PATH=target/coverage-detail.png FRAME_CAPTURE_FRAME=2 FRAME_CAPTURE_WIDTH=640 FRAME_CAPTURE_HEIGHT=360 cargo llvm-cov --no-report run -p frame-capture-example-bevy
+    cargo llvm-cov report
 
 test-publish:
     cargo publish --workspace --dry-run --allow-dirty

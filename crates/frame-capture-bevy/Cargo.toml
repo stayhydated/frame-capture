@@ -23,11 +23,11 @@ bevy = { default-features = false, features = [
   "wayland",
   "x11",
 ], workspace = true }
-image.workspace = true
-thiserror.workspace = true
 frame-capture = { default-features = false, workspace = true }
 frame-capture-macros = { optional = true, workspace = true }
 frame-capture-routes-bevy = { optional = true, workspace = true }
+image.workspace = true
+thiserror.workspace = true
 
 [lints]
 workspace = true

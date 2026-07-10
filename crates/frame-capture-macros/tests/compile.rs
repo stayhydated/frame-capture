@@ -5,4 +5,6 @@ fn capture_id_derives_have_stable_diagnostics() {
     tests.compile_fail("tests/ui/capture_id_path.rs");
     tests.compile_fail("tests/ui/capture_id_duplicate.rs");
     tests.compile_fail("tests/ui/capture_route_size.rs");
+    tests.compile_fail("tests/ui/capture_scenario_diagnostics.rs");
+    tests.compile_fail("tests/ui/capture_route_diagnostics.rs");
 }

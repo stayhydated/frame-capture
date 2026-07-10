@@ -661,3 +661,117 @@ const fn is_invalid_route_component_const(bytes: &[u8], start: usize, end: usize
         || (len == 1 && bytes[start] == b'.')
         || (len == 2 && bytes[start] == b'.' && bytes[start + 1] == b'.')
 }
+
+#[cfg(test)]
+mod tests {
+    use std::borrow::Borrow as _;
+
+    use super::*;
+
+    #[test]
+    fn static_id_refs_validate_and_serialize() {
+        let route = CaptureRouteIdRef::new("settings/tool");
+        let state = CaptureStateIdRef::new("loaded");
+        let scenario = CaptureScenarioIdRef::new("review");
+
+        let route_borrowed: &str = route.borrow();
+        let state_borrowed: &str = state.borrow();
+        let scenario_borrowed: &str = scenario.borrow();
+        assert_eq!(route_borrowed, "settings/tool");
+        assert_eq!(state_borrowed, "loaded");
+        assert_eq!(scenario_borrowed, "review");
+        assert_eq!(serde_json::to_string(&route).unwrap(), r#""settings/tool""#);
+        assert_eq!(serde_json::to_string(&state).unwrap(), r#""loaded""#);
+        assert_eq!(serde_json::to_string(&scenario).unwrap(), r#""review""#);
+        assert_eq!(CaptureScenarioIdRef::try_new("review").unwrap(), scenario);
+
+        assert_eq!(
+            CaptureRouteIdRef::try_new(""),
+            Err(ParseCaptureRouteIdError::Empty)
+        );
+        assert!(CaptureRouteIdRef::try_new("settings//tool").is_err());
+        assert_eq!(
+            CaptureStateIdRef::try_new(""),
+            Err(ParseCaptureStateIdError::Empty)
+        );
+        assert!(CaptureStateIdRef::try_new("states/loaded").is_err());
+        assert!(CaptureScenarioIdRef::try_new("../review").is_err());
+    }
+
+    #[test]
+    fn const_id_constructors_reject_every_path_shape() {
+        for invalid in [
+            "",
+            "/root",
+            "root/",
+            "root//tool",
+            "root/./tool",
+            "root/../tool",
+            "root\\tool",
+        ] {
+            assert!(std::panic::catch_unwind(|| CaptureRouteIdRef::new(invalid)).is_err());
+        }
+        for invalid in ["", ".", "..", "states/loaded", "states\\loaded"] {
+            assert!(std::panic::catch_unwind(|| CaptureStateIdRef::new(invalid)).is_err());
+            assert!(std::panic::catch_unwind(|| CaptureScenarioIdRef::new(invalid)).is_err());
+        }
+    }
+
+    #[test]
+    fn owned_ids_support_parse_borrow_and_conversion_contracts() {
+        let route = CaptureRouteId::try_from("settings/tool").unwrap();
+        let route_borrowed: &str = route.borrow();
+        assert_eq!(route_borrowed, "settings/tool");
+        assert_eq!(String::from(route.clone()), "settings/tool");
+        assert_eq!("settings/tool".parse::<CaptureRouteId>().unwrap(), route);
+
+        let state = CaptureStateId::try_from("loaded").unwrap();
+        let state_borrowed: &str = state.borrow();
+        assert_eq!(state_borrowed, "loaded");
+        assert_eq!(String::from(state.clone()), "loaded");
+        assert_eq!("loaded".parse::<CaptureStateId>().unwrap(), state);
+
+        let scenario = CaptureScenarioId::try_from("review").unwrap();
+        let scenario_borrowed: &str = scenario.borrow();
+        assert_eq!(scenario_borrowed, "review");
+        assert_eq!(String::from(scenario.clone()), "review");
+        assert_eq!("review".parse::<CaptureScenarioId>().unwrap(), scenario);
+
+        let state_from_scenario = CaptureStateId::from(scenario.clone());
+        assert_eq!(state_from_scenario.as_str(), "review");
+        assert_eq!(CaptureScenarioId::from(state_from_scenario), scenario);
+        assert_eq!(
+            CaptureStateIdRef::from(CaptureScenarioIdRef::new("review")).as_str(),
+            "review"
+        );
+
+        assert_eq!(
+            CaptureRouteId::new(""),
+            Err(ParseCaptureRouteIdError::Empty)
+        );
+        assert_eq!(
+            CaptureStateId::new(""),
+            Err(ParseCaptureStateIdError::Empty)
+        );
+        assert_eq!(
+            CaptureScenarioId::new(""),
+            Err(ParseCaptureStateIdError::Empty)
+        );
+    }
+
+    #[test]
+    fn env_var_supports_owned_conversions_and_all_validation_errors() {
+        let env_var = CaptureEnvVar::try_from("APP_CAPTURE_ROUTE").unwrap();
+        let borrowed: &str = env_var.borrow();
+        assert_eq!(borrowed, "APP_CAPTURE_ROUTE");
+        assert_eq!(String::from(env_var.clone()), "APP_CAPTURE_ROUTE");
+        assert_eq!(
+            "APP_CAPTURE_ROUTE".parse::<CaptureEnvVar>().unwrap(),
+            env_var
+        );
+        assert_eq!(
+            CaptureEnvVar::new("A\0B"),
+            Err(ParseCaptureEnvVarError::ContainsNul)
+        );
+    }
+}

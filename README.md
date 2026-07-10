@@ -1,5 +1,10 @@
 # frame-capture
 
+[![Build Status](https://github.com/stayhydated/frame-capture/actions/workflows/ci.yml/badge.svg)](https://github.com/stayhydated/frame-capture/actions/workflows/ci.yml)
+[![Codecov](https://codecov.io/github/stayhydated/frame-capture/graph/badge.svg?token=34CV04UOU1)](https://codecov.io/github/stayhydated/frame-capture)
+[![Docs](https://docs.rs/frame-capture/badge.svg)](https://docs.rs/frame-capture/)
+[![Crates.io](https://img.shields.io/crates/v/frame-capture.svg)](https://crates.io/crates/frame-capture)
+
 Deterministic screenshot capture for wgpu-backed Rust applications.
 
 `frame-capture` gives an app a typed route catalog, a small environment-variable

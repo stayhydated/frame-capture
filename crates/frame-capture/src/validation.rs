@@ -2,7 +2,7 @@ use std::collections::BTreeSet;
 
 use thiserror::Error;
 
-use crate::{CaptureItemSpec, CaptureRoute, CaptureRouteIdRef, CaptureScenario, CaptureStateIdRef};
+use crate::{CaptureItemSpec, CaptureRoute, CaptureScenario, CaptureStateIdRef};
 
 #[derive(Clone, Debug, Eq, Error, PartialEq)]
 pub enum CaptureCatalogValidationError {
@@ -151,10 +151,6 @@ fn validate_capture_items<T: Copy + Eq>(
     let variant_ids = variant_ids.into_iter().collect::<Vec<_>>();
     validate_duplicate_state_ids(kind, variant_ids.iter().copied())?;
     for id in variant_ids {
-        CaptureStateIdRef::try_new(id).map_err(|_| CaptureCatalogValidationError::UnknownId {
-            kind,
-            id: id.to_owned(),
-        })?;
         if !item_ids.contains(id) {
             return Err(CaptureCatalogValidationError::UnknownId {
                 kind,
@@ -228,10 +224,6 @@ fn validate_duplicate_specs(
 ) -> Result<BTreeSet<&'static str>, CaptureCatalogValidationError> {
     let mut seen = BTreeSet::new();
     for id in ids {
-        CaptureRouteIdRef::try_new(id).map_err(|_| CaptureCatalogValidationError::UnknownId {
-            kind,
-            id: id.to_owned(),
-        })?;
         if !seen.insert(id) {
             return Err(duplicate(kind, id));
         }

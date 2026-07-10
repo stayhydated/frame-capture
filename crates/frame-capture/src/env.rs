@@ -881,3 +881,331 @@ fn parse_dimension(var: &str, value: &str) -> Result<u32, CaptureEnvError> {
 
     Ok(dimension)
 }
+
+#[cfg(test)]
+mod tests {
+    use std::num::NonZeroU32;
+
+    use super::*;
+    use crate::{CaptureItemSpec, CaptureItemVariant, CaptureRouteVariant, RouteSpec};
+
+    #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+    enum Route {
+        Root,
+        Review,
+    }
+
+    impl CaptureRoute for Route {
+        const DEFAULT: Self = Self::Root;
+        const ROUTES: &'static [Self] = &[Self::Root, Self::Review];
+        const VARIANTS: &'static [RouteSpec] = &[
+            RouteSpec::new("root", "Root", PixelSize::new(100, 100)),
+            RouteSpec::new("review", "Review", PixelSize::new(200, 150)),
+        ];
+        const ROUTE_SPECS: &'static [CaptureRouteVariant<Self>] = &[
+            CaptureRouteVariant {
+                route: Self::Root,
+                spec: Self::VARIANTS[0],
+            },
+            CaptureRouteVariant {
+                route: Self::Review,
+                spec: Self::VARIANTS[1],
+            },
+        ];
+
+        fn spec(self) -> RouteSpec {
+            match self {
+                Self::Root => Self::VARIANTS[0],
+                Self::Review => Self::VARIANTS[1],
+            }
+        }
+
+        fn from_id(value: &str) -> Result<Self, ParseRouteError> {
+            match value {
+                "root" => Ok(Self::Root),
+                "review" => Ok(Self::Review),
+                _ => Err(ParseRouteError::new(value, ["root", "review"])),
+            }
+        }
+    }
+
+    #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+    enum Scenario {
+        Loaded,
+    }
+
+    impl CaptureScenario for Scenario {
+        const SCENARIOS: &'static [Self] = &[Self::Loaded];
+        const VARIANTS: &'static [&'static str] = &["loaded"];
+        const SPECS: &'static [CaptureItemSpec] = &[CaptureItemSpec::new("loaded", "Loaded")];
+        const SCENARIO_SPECS: &'static [CaptureItemVariant<Self>] = &[CaptureItemVariant {
+            value: Self::Loaded,
+            spec: Self::SPECS[0],
+        }];
+
+        fn id(self) -> &'static str {
+            "loaded"
+        }
+
+        fn from_id(value: &str) -> Result<Self, ParseScenarioError> {
+            (value == "loaded")
+                .then_some(Self::Loaded)
+                .ok_or_else(|| ParseScenarioError::new(value, ["loaded"]))
+        }
+    }
+
+    fn env(prefix: &str) -> CaptureEnv {
+        CaptureEnv::try_with_prefix(prefix).unwrap()
+    }
+
+    fn clear(env: &CaptureEnv) {
+        for var in [
+            env.route_var(),
+            env.path_var(),
+            env.frame_var(),
+            env.width_var(),
+            env.height_var(),
+            env.scenario_var(),
+        ] {
+            unsafe { std::env::remove_var(var) };
+        }
+    }
+
+    #[test]
+    fn capture_frames_cover_nonzero_parse_display_and_serde_contracts() {
+        let nonzero = NonZeroU32::new(3).unwrap();
+        let frame = CaptureFrame::from_nonzero(nonzero);
+        assert_eq!(frame.get(), 3);
+        assert_eq!(frame.into_nonzero(), nonzero);
+        assert_eq!(CaptureFrame::from(nonzero), frame);
+        assert_eq!(NonZeroU32::from(frame), nonzero);
+        assert_eq!(frame.to_string(), "3");
+        assert_eq!("3".parse::<CaptureFrame>().unwrap(), frame);
+        assert!(matches!(
+            "three".parse::<CaptureFrame>(),
+            Err(ParseCaptureFrameError::Invalid { .. })
+        ));
+        assert_eq!(
+            "0".parse::<CaptureFrame>(),
+            Err(ParseCaptureFrameError::Zero)
+        );
+        assert_eq!(serde_json::to_string(&frame).unwrap(), "3");
+        assert!(serde_json::from_str::<CaptureFrame>("0").is_err());
+        assert!(std::panic::catch_unwind(|| CaptureFrame::new(0)).is_err());
+    }
+
+    #[test]
+    fn capture_env_builder_sets_every_protocol_name() {
+        let env = CaptureEnv::builder()
+            .route_var("APP_ROUTE")
+            .unwrap()
+            .path_var("APP_PATH")
+            .unwrap()
+            .frame_var("APP_FRAME")
+            .unwrap()
+            .width_var("APP_WIDTH")
+            .unwrap()
+            .height_var("APP_HEIGHT")
+            .unwrap()
+            .scenario_var("APP_SCENARIO")
+            .unwrap()
+            .build();
+        assert_eq!(
+            [
+                env.route_var(),
+                env.path_var(),
+                env.frame_var(),
+                env.width_var(),
+                env.height_var(),
+                env.scenario_var()
+            ],
+            [
+                "APP_ROUTE",
+                "APP_PATH",
+                "APP_FRAME",
+                "APP_WIDTH",
+                "APP_HEIGHT",
+                "APP_SCENARIO"
+            ]
+        );
+        assert_eq!(
+            CaptureEnv::with_prefix("APP2").route_var(),
+            "APP2_CAPTURE_ROUTE"
+        );
+        assert_eq!(CaptureEnv::default(), CaptureEnv::frame_capture());
+        assert!(std::panic::catch_unwind(|| CaptureEnv::with_prefix("BAD=APP")).is_err());
+    }
+
+    #[test]
+    fn capture_env_reads_route_and_scenario_values_and_errors() {
+        let env = env("FRAME_CAPTURE_ENV_IDS_TEST");
+        clear(&env);
+        assert_eq!(Route::Root.spec().id(), "root");
+        assert_eq!(Scenario::Loaded.id(), "loaded");
+        assert_eq!(env.read_route::<Route>().unwrap(), Route::Root);
+        assert_eq!(env.read_scenario::<Scenario>().unwrap(), None);
+        assert_eq!(env.read_scenario_id().unwrap(), None);
+
+        unsafe { std::env::set_var(env.route_var(), "review") };
+        assert_eq!(env.read_route::<Route>().unwrap(), Route::Review);
+        let default = CaptureRouteId::new("root").unwrap();
+        assert_eq!(
+            env.read_route_id_or(&default).unwrap().1,
+            CaptureRouteSource::Env
+        );
+
+        unsafe { std::env::set_var(env.route_var(), "missing") };
+        assert!(matches!(
+            env.read_route::<Route>(),
+            Err(CaptureEnvError::InvalidRoute { .. })
+        ));
+        unsafe { std::env::set_var(env.route_var(), "../missing") };
+        assert!(matches!(
+            env.read_route_id_or(&default),
+            Err(CaptureEnvError::InvalidRouteId { .. })
+        ));
+
+        unsafe { std::env::set_var(env.scenario_var(), "loaded") };
+        assert_eq!(
+            env.read_scenario::<Scenario>().unwrap(),
+            Some(Scenario::Loaded)
+        );
+        assert_eq!(env.read_scenario_id().unwrap().unwrap().as_str(), "loaded");
+        unsafe { std::env::set_var(env.scenario_var(), "missing") };
+        assert!(matches!(
+            env.read_scenario::<Scenario>(),
+            Err(CaptureEnvError::InvalidScenario { .. })
+        ));
+        unsafe { std::env::set_var(env.scenario_var(), "states/loaded") };
+        assert!(matches!(
+            env.read_scenario_id(),
+            Err(CaptureEnvError::InvalidStateId { .. })
+        ));
+        clear(&env);
+    }
+
+    #[test]
+    fn capture_env_reads_capture_defaults_overrides_and_errors() {
+        let env = env("FRAME_CAPTURE_ENV_CONFIG_TEST");
+        clear(&env);
+        let default_size = PixelSize::new(640, 480);
+        assert!(!env.is_capture_requested());
+        assert_eq!(env.read_capture(default_size).unwrap(), None);
+
+        unsafe { std::env::set_var(env.path_var(), "capture.png") };
+        assert!(env.is_capture_requested());
+        let capture = env.read_capture(default_size).unwrap().unwrap();
+        assert_eq!(capture.frame(), DEFAULT_CAPTURE_FRAME);
+        assert_eq!(capture.size(), default_size);
+
+        unsafe { std::env::set_var(env.frame_var(), "bad") };
+        assert!(matches!(
+            env.read_capture(default_size),
+            Err(CaptureEnvError::InvalidInteger { .. })
+        ));
+        unsafe { std::env::set_var(env.frame_var(), "0") };
+        assert!(matches!(
+            env.read_capture(default_size),
+            Err(CaptureEnvError::ZeroDimension { .. })
+        ));
+        unsafe { std::env::remove_var(env.frame_var()) };
+
+        unsafe { std::env::set_var(env.width_var(), "320") };
+        assert!(matches!(
+            env.read_capture(default_size),
+            Err(CaptureEnvError::PartialSize { .. })
+        ));
+        unsafe { std::env::set_var(env.height_var(), "bad") };
+        assert!(matches!(
+            env.read_capture(default_size),
+            Err(CaptureEnvError::InvalidInteger { .. })
+        ));
+        unsafe { std::env::set_var(env.height_var(), "0") };
+        assert!(matches!(
+            env.read_capture(default_size),
+            Err(CaptureEnvError::ZeroDimension { .. })
+        ));
+        unsafe { std::env::set_var(env.height_var(), "240") };
+        assert_eq!(
+            env.read_capture(default_size).unwrap().unwrap().size(),
+            PixelSize::new(320, 240)
+        );
+
+        unsafe { std::env::set_var(env.path_var(), "capture.jpg") };
+        assert!(matches!(
+            env.read_capture(default_size),
+            Err(CaptureEnvError::InvalidOutputPath { .. })
+        ));
+        clear(&env);
+    }
+
+    #[test]
+    fn capture_env_session_alias_carries_typed_inputs() {
+        let env = env("FRAME_CAPTURE_ENV_SESSION_ALIAS_TEST");
+        clear(&env);
+        unsafe {
+            std::env::set_var(env.route_var(), "review");
+            std::env::set_var(env.scenario_var(), "loaded");
+        }
+        let session = env.read_session_with_scenario::<Route, Scenario>().unwrap();
+        assert_eq!(session.route(), Route::Review);
+        assert_eq!(session.scenario(), Some(Scenario::Loaded));
+        assert!(!session.is_capture());
+        clear(&env);
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn capture_env_rejects_non_unicode_string_values() {
+        use std::{ffi::OsString, os::unix::ffi::OsStringExt as _};
+
+        let env = env("FRAME_CAPTURE_ENV_UNICODE_TEST");
+        clear(&env);
+        unsafe { std::env::set_var(env.route_var(), OsString::from_vec(vec![0xff])) };
+        assert!(matches!(
+            env.read_route::<Route>(),
+            Err(CaptureEnvError::NotUnicode { .. })
+        ));
+        clear(&env);
+    }
+
+    #[test]
+    fn launch_env_constructors_and_vars_cover_route_only_requests() {
+        let route = CaptureRouteId::new("review").unwrap();
+        let launch = CaptureLaunchEnv::new(route.clone());
+        assert_eq!(launch.env(), &CaptureEnv::frame_capture());
+        assert_eq!(launch.route_id(), &route);
+        assert_eq!(launch.output_path(), None);
+        assert_eq!(launch.frame(), None);
+        assert_eq!(launch.size(), None);
+        assert_eq!(launch.scenario_id(), None);
+        assert_eq!(launch.vars().len(), 1);
+        assert_eq!(CaptureLaunchEnv::try_new("review").unwrap(), launch);
+        assert!(CaptureLaunchEnv::try_new("../review").is_err());
+        assert_eq!(CaptureLaunchEnv::optional_size(None, None), Ok(None));
+
+        let var = CaptureLaunchEnvVar::new("APP_ROUTE", "review");
+        assert_eq!(var.name(), "APP_ROUTE");
+        assert_eq!(var.value(), OsStr::new("review"));
+        assert_eq!(
+            var.into_pair(),
+            ("APP_ROUTE".to_owned(), OsString::from("review"))
+        );
+    }
+
+    #[test]
+    fn frame_gate_advances_once_and_latches_requests() {
+        let mut gate = CaptureFrameGate::default();
+        assert_eq!(gate.frame(), 0);
+        assert!(!gate.requested());
+        assert!(!gate.ready(CaptureFrame::new(2)));
+        gate.advance();
+        gate.advance();
+        assert!(gate.ready(CaptureFrame::new(2)));
+        gate.mark_requested();
+        gate.advance();
+        assert_eq!(gate.frame(), 2);
+        assert!(gate.requested());
+        assert!(!gate.ready(CaptureFrame::new(2)));
+    }
+}

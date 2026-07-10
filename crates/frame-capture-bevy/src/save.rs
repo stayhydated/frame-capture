@@ -27,7 +27,10 @@ pub(crate) fn save_capture_to_disk(
     captured: On<ScreenshotCaptured>,
 ) -> Result<(), CaptureSaveError> {
     let path = path.as_ref().to_owned();
-    let image = captured.image.clone();
+    save_image_to_disk(path, captured.image.clone())
+}
+
+fn save_image_to_disk(path: PathBuf, image: Image) -> Result<(), CaptureSaveError> {
     let dynamic = image.try_into_dynamic()?;
     let image = dynamic.to_rgb8();
 
@@ -46,4 +49,55 @@ pub(crate) fn save_capture_to_disk(
     println!("Screenshot saved to {}", path.display());
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use bevy::{
+        asset::RenderAssetUsages,
+        render::render_resource::{Extent3d, TextureDimension, TextureFormat},
+    };
+
+    use super::*;
+
+    fn test_image() -> Image {
+        Image::new_fill(
+            Extent3d {
+                width: 1,
+                height: 1,
+                depth_or_array_layers: 1,
+            },
+            TextureDimension::D2,
+            &[255, 0, 0, 255],
+            TextureFormat::Rgba8UnormSrgb,
+            RenderAssetUsages::default(),
+        )
+    }
+
+    #[test]
+    fn save_reports_image_conversion_errors() {
+        let mut image = Image::new_target_texture(1, 1, TextureFormat::Rgba8UnormSrgb, None);
+        image.data = None;
+        assert!(matches!(
+            save_image_to_disk(PathBuf::from("capture.png"), image),
+            Err(CaptureSaveError::ImageConversion { .. })
+        ));
+    }
+
+    #[test]
+    fn save_reports_unknown_formats_and_io_errors() {
+        assert!(matches!(
+            save_image_to_disk(PathBuf::from("capture.unknown"), test_image()),
+            Err(CaptureSaveError::UnknownImageFormat { .. })
+        ));
+
+        let path = std::env::temp_dir()
+            .join("frame-capture-missing-parent")
+            .join("capture.png");
+        let _ = std::fs::remove_dir_all(path.parent().unwrap());
+        assert!(matches!(
+            save_image_to_disk(path, test_image()),
+            Err(CaptureSaveError::Save { .. })
+        ));
+    }
 }

@@ -1,8 +1,8 @@
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 use frame_capture_routes_bevy::{
-    App, BevyCaptureRegistryEnvExt as _, CaptureEnv, CaptureRouteId, PixelSize, registered_route,
-    registered_route_for_key, registered_routes,
+    App, BevyCaptureRegistryEnvExt as _, CaptureEnv, CaptureRouteId, PixelSize, RegisteredRoute,
+    RouteSpec, registered_route, registered_route_for_key, registered_routes,
 };
 
 static INSTALLS: AtomicUsize = AtomicUsize::new(0);
@@ -55,9 +55,10 @@ fn registers_route_specs() {
 fn registered_route_installs_page() {
     let route = registered_route(&route_id("registry/root")).unwrap();
     let mut app = App::new();
+    let before = INSTALLS.load(Ordering::Relaxed);
     route.install(&mut app);
 
-    assert_eq!(INSTALLS.load(Ordering::Relaxed), 1);
+    assert_eq!(INSTALLS.load(Ordering::Relaxed), before + 1);
 }
 
 #[test]
@@ -68,6 +69,7 @@ fn env_reads_registered_session() {
 
     assert_eq!(session.spec().id(), "registry/root");
     assert!(!session.is_capture());
+    session.install(&mut App::new());
 }
 
 #[test]
@@ -88,6 +90,48 @@ fn typed_route_key_reads_registered_session() {
 #[test]
 fn validates_registered_route_ids_are_unique() {
     frame_capture_routes_bevy::validate_registered_routes().unwrap();
+}
+
+#[test]
+fn manually_constructed_bevy_route_exposes_spec_and_installer() {
+    let route = RegisteredRoute::new(
+        RouteSpec::new("manual", "Manual", PixelSize::new(40, 30)),
+        |_: &mut App| {},
+    );
+    assert_eq!(route.spec().id(), "manual");
+    route.install(&mut App::new());
+}
+
+#[test]
+fn bevy_registered_capture_session_exposes_capture_config() {
+    let env = CaptureEnv::with_prefix("FRAME_CAPTURE_ROUTES_BEVY_CAPTURE_TEST");
+    unsafe {
+        std::env::set_var(env.path_var(), "capture.png");
+        std::env::set_var(env.frame_var(), "2");
+    }
+
+    let session = env
+        .read_registered_session(&route_id("registry/root"))
+        .unwrap();
+    assert!(session.is_capture());
+    assert_eq!(session.route().spec().id(), "registry/root");
+    assert_eq!(session.capture().unwrap().frame().get(), 2);
+    assert!(
+        env.read_registered_capture(&route_id("registry/root"))
+            .unwrap()
+            .is_some()
+    );
+    assert!(
+        env.read_registered_capture_for::<RegistryRootRoute>()
+            .unwrap()
+            .is_some()
+    );
+    assert_eq!(session.into_capture().unwrap().frame().get(), 2);
+
+    unsafe {
+        std::env::remove_var(env.path_var());
+        std::env::remove_var(env.frame_var());
+    }
 }
 
 fn route_id(value: &str) -> CaptureRouteId {

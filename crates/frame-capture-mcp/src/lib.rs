@@ -232,3 +232,123 @@ pub async fn serve_registered_capture_routes_stdio() -> Result<(), Box<dyn Error
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use frame_capture::{CaptureRoute as _, PixelSize};
+
+    use super::*;
+
+    #[derive(frame_capture::CaptureRoute, Clone, Copy, Debug, Eq, PartialEq)]
+    #[capture_route(default = Root, size = "640x480")]
+    enum Route {
+        Root,
+        Review,
+    }
+
+    #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+    enum InvalidRoute {
+        Root,
+    }
+
+    impl frame_capture::CaptureRoute for InvalidRoute {
+        const DEFAULT: Self = Self::Root;
+        const ROUTES: &'static [Self] = &[];
+        const VARIANTS: &'static [frame_capture::RouteSpec] = &[frame_capture::RouteSpec::new(
+            "root",
+            "Root",
+            PixelSize::new(10, 10),
+        )];
+        const ROUTE_SPECS: &'static [frame_capture::CaptureRouteVariant<Self>] =
+            &[frame_capture::CaptureRouteVariant {
+                route: Self::Root,
+                spec: Self::VARIANTS[0],
+            }];
+
+        fn spec(self) -> frame_capture::RouteSpec {
+            Self::VARIANTS[0]
+        }
+
+        fn from_id(value: &str) -> Result<Self, frame_capture::ParseRouteError> {
+            (value == "root")
+                .then_some(Self::Root)
+                .ok_or_else(|| frame_capture::ParseRouteError::new(value, ["root"]))
+        }
+    }
+
+    #[frame_capture_routes::capture_route(
+        id = "registered/unit",
+        title = "Registered Unit",
+        size = "320x200"
+    )]
+    fn install_registered_unit() {}
+
+    #[test]
+    fn enum_server_tools_list_lookup_and_report_unknown_routes() {
+        let server = CaptureRoutesServer::<Route>::default();
+        let Json(routes) = server.list_capture_routes().unwrap();
+        assert_eq!(routes.routes().len(), 2);
+
+        let Json(route) = server
+            .get_capture_route(Parameters(CaptureRouteRequest {
+                id: CaptureRouteId::new("review").unwrap(),
+            }))
+            .unwrap();
+        assert_eq!(route.id(), Route::Review.id());
+        assert_eq!(route.default_size().width(), 640);
+
+        let error = server
+            .get_capture_route(Parameters(CaptureRouteRequest {
+                id: CaptureRouteId::new("missing").unwrap(),
+            }))
+            .err()
+            .unwrap();
+        assert!(error.contains("unknown capture route `missing`"));
+
+        let info = ServerHandler::get_info(&server);
+        assert_eq!(
+            info.instructions.as_deref(),
+            Some("Expose frame-capture route metadata.")
+        );
+
+        let error = CaptureRoutesServer::<InvalidRoute>::default()
+            .list_capture_routes()
+            .err()
+            .unwrap();
+        assert!(error.contains("capture route default `root` is missing from ROUTES"));
+        assert_eq!(InvalidRoute::Root.spec().id(), "root");
+        assert_eq!(InvalidRoute::from_id("root"), Ok(InvalidRoute::Root));
+        assert!(InvalidRoute::from_id("missing").is_err());
+    }
+
+    #[test]
+    fn registered_server_tools_list_lookup_and_report_unknown_routes() {
+        let server = RegisteredCaptureRoutesServer::default();
+        let Json(routes) = server.list_registered_capture_routes().unwrap();
+        assert!(routes.routes().iter().any(|route| {
+            route.id() == "registered/unit"
+                && route.default_size().width() == PixelSize::new(320, 200).width()
+        }));
+
+        let Json(route) = server
+            .get_registered_capture_route(Parameters(CaptureRouteRequest {
+                id: CaptureRouteId::new("registered/unit").unwrap(),
+            }))
+            .unwrap();
+        assert_eq!(route.title(), "Registered Unit");
+
+        let error = server
+            .get_registered_capture_route(Parameters(CaptureRouteRequest {
+                id: CaptureRouteId::new("registered/missing").unwrap(),
+            }))
+            .err()
+            .unwrap();
+        assert!(error.contains("registered capture route `registered/missing` was not found"));
+
+        let info = ServerHandler::get_info(&server);
+        assert_eq!(
+            info.instructions.as_deref(),
+            Some("Expose registered frame-capture route metadata.")
+        );
+    }
+}

@@ -151,4 +151,21 @@ jobs:
 
       - name: Run coverage
         shell: bash
-        run: cargo llvm-cov --workspace --all-features --all-targets
+        run: |
+          cargo llvm-cov clean --workspace
+          cargo llvm-cov --workspace --all-features --all-targets --no-report
+          FRAME_CAPTURE_ROUTE=bevy/dashboard FRAME_CAPTURE_PATH=target/coverage-dashboard.png FRAME_CAPTURE_SCENARIO=alert cargo llvm-cov --no-report run -p frame-capture-example-bevy
+          FRAME_CAPTURE_ROUTE=bevy/detail FRAME_CAPTURE_PATH=target/coverage-detail.png FRAME_CAPTURE_FRAME=2 FRAME_CAPTURE_WIDTH=640 FRAME_CAPTURE_HEIGHT=360 cargo llvm-cov --no-report run -p frame-capture-example-bevy
+          cargo llvm-cov report --cobertura --output-path=target/cobertura.xml
+
+      - name: Codecov publish
+        uses: codecov/codecov-action@v7
+        with:
+          files: target/cobertura.xml
+          disable_search: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Codecov housekeeping
+        shell: bash
+        run: |
+          rm -f codecov codecov.SHA256SUM codecov.SHA256SUM.sig

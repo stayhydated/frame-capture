@@ -12,10 +12,10 @@ macros = [ "dep:frame-capture-macros", "frame-capture/macros" ]
 
 [dependencies]
 bevy_app = { features = [ "std" ], workspace = true }
-inventory.workspace = true
 frame-capture.workspace = true
 frame-capture-macros = { optional = true, workspace = true }
 frame-capture-routes = { default-features = false, workspace = true }
+inventory.workspace = true
 
 [lints]
 workspace = true

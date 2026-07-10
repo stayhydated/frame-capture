@@ -132,3 +132,42 @@ impl CaptureScenario for NoCaptureScenario {
         ))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+    enum MissingScenarioSpec {
+        Value,
+    }
+
+    impl CaptureScenario for MissingScenarioSpec {
+        const SCENARIOS: &'static [Self] = &[Self::Value];
+        const VARIANTS: &'static [&'static str] = &["value"];
+        const SPECS: &'static [CaptureItemSpec] = &[];
+        const SCENARIO_SPECS: &'static [CaptureItemVariant<Self>] = &[];
+
+        fn id(self) -> &'static str {
+            "value"
+        }
+
+        fn from_id(value: &str) -> Result<Self, ParseScenarioError> {
+            (value == "value")
+                .then_some(Self::Value)
+                .ok_or_else(|| ParseScenarioError::new(value, ["value"]))
+        }
+    }
+
+    #[test]
+    fn scenario_spec_panics_when_metadata_is_missing() {
+        assert_eq!(MissingScenarioSpec::Value.id(), "value");
+        assert_eq!(MissingScenarioSpec::Value.id_ref().as_str(), "value");
+        assert_eq!(
+            MissingScenarioSpec::from_id("value"),
+            Ok(MissingScenarioSpec::Value)
+        );
+        assert!(MissingScenarioSpec::from_id("missing").is_err());
+        assert!(std::panic::catch_unwind(|| MissingScenarioSpec::Value.spec()).is_err());
+    }
+}

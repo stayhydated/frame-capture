@@ -11,10 +11,10 @@ default = [ "macros" ]
 macros = [ "dep:frame-capture-macros" ]
 
 [dependencies]
-inventory.workspace = true
-thiserror.workspace = true
 frame-capture = { default-features = false, workspace = true }
 frame-capture-macros = { optional = true, workspace = true }
+inventory.workspace = true
+thiserror.workspace = true
 
 [lints]
 workspace = true

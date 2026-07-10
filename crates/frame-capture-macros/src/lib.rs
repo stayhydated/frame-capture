@@ -1122,4 +1122,21 @@ mod tests {
 
         let _ = fs::remove_dir_all(root);
     }
+
+    #[test]
+    fn macro_reports_missing_toml_and_partial_dimensions() {
+        let root = temp_root("missing_toml");
+        let manifest_dir = root.join("manifest");
+        fs::create_dir_all(&manifest_dir).unwrap();
+
+        with_capture_env(&manifest_dir, None, || {
+            let span = Ident::new("Route", proc_macro2::Span::call_site());
+            assert_eq!(find_toml_path(), None);
+            assert!(load_shared_size(&mut None, &span).is_err());
+            assert!(RouteSize::from_parts(None, Some(10), None, &span).is_err());
+            assert!(RouteSize::from_parts(Some(10), None, None, &span).is_err());
+        });
+
+        let _ = fs::remove_dir_all(root);
+    }
 }

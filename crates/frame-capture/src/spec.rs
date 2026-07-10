@@ -205,3 +205,48 @@ pub fn capture_route_catalog<R: CaptureRoute>() -> CaptureRouteCatalog {
 pub fn capture_route_infos<R: CaptureRoute>() -> Vec<CaptureRouteInfo> {
     capture_route_catalog::<R>().into_routes()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn route_specs_validate_ids_and_expose_fields() {
+        let spec = RouteSpec::try_new("settings/tool", "Tool", PixelSize::new(800, 600)).unwrap();
+        assert_eq!(spec.id_ref().as_str(), "settings/tool");
+        assert_eq!(spec.id(), "settings/tool");
+        assert_eq!(spec.title(), "Tool");
+        assert_eq!(spec.default_size(), PixelSize::new(800, 600));
+        assert!(RouteSpec::try_new("../tool", "Tool", PixelSize::new(1, 1)).is_err());
+    }
+
+    #[test]
+    fn item_specs_validate_ids_and_expose_optional_descriptions() {
+        let plain = CaptureItemSpec::try_new("empty", "Empty").unwrap();
+        assert_eq!(CaptureItemSpec::new("empty", "Empty"), plain);
+        assert_eq!(plain.id_ref().as_str(), "empty");
+        assert_eq!(plain.id(), "empty");
+        assert_eq!(plain.title(), "Empty");
+        assert_eq!(plain.description(), None);
+        assert!(CaptureItemSpec::try_new("states/empty", "Empty").is_err());
+
+        let described = CaptureItemSpec::with_description("loaded", "Loaded", "Loaded data");
+        assert_eq!(described.description(), Some("Loaded data"));
+    }
+
+    #[test]
+    fn route_catalogs_support_collection_and_consumption() {
+        let specs = [
+            RouteSpec::new("root", "Root", PixelSize::new(100, 100)),
+            RouteSpec::new("review", "Review", PixelSize::new(200, 150)),
+        ];
+        let catalog = CaptureRouteCatalog::from_specs(specs);
+        assert_eq!(catalog.routes().len(), 2);
+        assert_eq!(catalog.routes()[0].id(), "root");
+        assert_eq!(catalog.routes()[1].title(), "Review");
+        assert_eq!(catalog.routes()[1].default_size().width(), 200);
+
+        let collected: CaptureRouteCatalog = specs.into_iter().collect();
+        assert_eq!(collected.into_routes().len(), 2);
+    }
+}

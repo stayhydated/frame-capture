@@ -29,6 +29,13 @@ derive_more = { default-features = false, features = [
   "display",
   "from",
 ], version = "2.1" }
+frame-capture = { default-features = false, path = "crates/frame-capture" }
+frame-capture-bevy = { path = "crates/frame-capture-bevy" }
+frame-capture-macros = { path = "crates/frame-capture-macros" }
+frame-capture-mcp = { path = "crates/frame-capture-mcp" }
+frame-capture-routes = { default-features = false, path = "crates/frame-capture-routes" }
+frame-capture-routes-bevy = { path = "crates/frame-capture-routes-bevy" }
+frame-capture-toml = { path = "crates/frame-capture-toml" }
 fs-err = "3.3"
 heck = "0.5"
 image = { default-features = false, features = [ "png" ], version = "0.25" }
@@ -48,13 +55,6 @@ serde_with = { default-features = false, features = [ "macros" ], version = "3.1
 syn = "2.0"
 thiserror = "2.0"
 toml = "0.9"
-frame-capture = { default-features = false, path = "crates/frame-capture" }
-frame-capture-bevy = { path = "crates/frame-capture-bevy" }
-frame-capture-macros = { path = "crates/frame-capture-macros" }
-frame-capture-mcp = { path = "crates/frame-capture-mcp" }
-frame-capture-routes = { default-features = false, path = "crates/frame-capture-routes" }
-frame-capture-routes-bevy = { path = "crates/frame-capture-routes-bevy" }
-frame-capture-toml = { path = "crates/frame-capture-toml" }
 
 [profile.dev]
 codegen-units = 16
@@ -73,7 +73,7 @@ opt-level = 3
 [workspace.lints.rust]
 future_incompatible = "deny"
 nonstandard_style = "deny"
-unexpected_cfgs = { level = "deny", check-cfg = ["cfg(coverage)"] }
+unexpected_cfgs = { check-cfg = [ "cfg(coverage)" ], level = "deny" }
 unsafe_op_in_unsafe_fn = "deny"
 unused_must_use = "deny"
 

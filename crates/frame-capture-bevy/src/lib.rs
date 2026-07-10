@@ -196,6 +196,12 @@ mod tests {
     #[test]
     fn route_and_scenario_plugins_install_selected_capture_state() {
         let mut app = App::new();
+        app.add_plugins(RoutePlugin::new(
+            TestRouteState::Detail,
+            |route: TestRouteState, app: &mut App| {
+                app.insert_resource(MappedRouteResource(route.spec().title()));
+            },
+        ));
         app.add_plugins(ScenarioPlugin::new(
             Some(TestScenario::Loaded),
             |scenario, app: &mut App| {
@@ -207,6 +213,7 @@ mod tests {
             app.world().resource::<InstalledScenario>().0,
             Some(TestScenario::Loaded)
         );
+        assert_eq!(app.world().resource::<MappedRouteResource>().0, "Detail");
     }
 
     #[test]
@@ -480,5 +487,97 @@ mod tests {
 
         app.update();
         assert_eq!(*app.world().resource::<CaptureReady>(), CaptureReady::Ready);
+    }
+
+    #[test]
+    fn capture_ready_and_warmup_values_expose_manual_control() {
+        let mut ready = CaptureReady::default();
+        assert!(ready.is_ready());
+        ready.mark_pending();
+        assert!(!ready.is_ready());
+        ready.mark_ready();
+        assert_eq!(ready, CaptureReady::ready());
+
+        assert_eq!(CaptureWarmupPlugin::new(3).frame_count(), 3);
+        assert_eq!(CaptureWarmupPlugin::frames(4).frame_count(), 4);
+    }
+
+    #[test]
+    fn bevy_capture_config_and_session_support_consuming_accessors() {
+        let capture =
+            CaptureConfig::try_new("capture.png", CaptureFrame::new(2), PixelSize::new(30, 20))
+                .unwrap();
+        let config = BevyCaptureConfig::from(capture.clone());
+        assert_eq!(config.capture(), &capture);
+        assert_eq!(config.frame(), CaptureFrame::new(2));
+
+        let session = BevyCaptureSession::new(
+            TestRouteState::Detail,
+            Some(capture),
+            Some(TestScenario::Loaded),
+        );
+        assert_eq!(
+            session.capture_config().unwrap().size(),
+            PixelSize::new(30, 20)
+        );
+        let (route, capture, scenario) = session.into_parts();
+        assert_eq!(route, TestRouteState::Detail);
+        assert_eq!(capture.unwrap().frame(), CaptureFrame::new(2));
+        assert_eq!(scenario, Some(TestScenario::Loaded));
+    }
+
+    #[test]
+    fn plugin_value_accessors_expose_selected_inputs() {
+        let selected = SelectedCaptureRoute::new(TestRouteState::Detail);
+        assert_eq!(*selected, TestRouteState::Detail);
+        assert_eq!(selected.route(), TestRouteState::Detail);
+
+        let route_state = RouteStatePlugin::new(TestRouteState::Detail);
+        assert_eq!(route_state.route(), TestRouteState::Detail);
+        let scenario_state = ScenarioStatePlugin::new(None, TestScenario::Empty);
+        assert_eq!(scenario_state.selected_state(), TestScenario::Empty);
+        assert_eq!(
+            ScenarioStatePlugin::new(Some(TestScenario::Loaded), TestScenario::Empty)
+                .selected_state(),
+            TestScenario::Loaded
+        );
+    }
+
+    #[test]
+    fn capture_window_helpers_and_live_runtime_are_explicit() {
+        let capture =
+            CaptureConfig::try_new("capture.png", CaptureFrame::new(1), PixelSize::new(10, 10))
+                .unwrap();
+        assert!(is_capture_enabled(Some(&capture)));
+        assert!(!is_capture_enabled(None));
+
+        let mut app = App::new();
+        app.add_capture_runtime(None);
+        app.add_capture_plugins(MinimalPlugins, None);
+        assert!(!app.world().contains_resource::<BevyCaptureConfig>());
+    }
+
+    #[test]
+    fn bevy_env_reads_selected_route_and_scenario() {
+        assert!(TestRouteState::from_id("missing").is_err());
+        assert_eq!(TestScenario::Empty.id(), "empty");
+        assert_eq!(TestScenario::Loaded.id(), "loaded");
+        assert_eq!(TestScenario::from_id("empty"), Ok(TestScenario::Empty));
+        assert!(TestScenario::from_id("missing").is_err());
+
+        let env = CaptureEnv::with_prefix("FRAME_CAPTURE_BEVY_INPUT_TEST");
+        unsafe {
+            std::env::set_var(env.route_var(), "detail");
+            std::env::set_var(env.scenario_var(), "loaded");
+        }
+        let session = env
+            .read_bevy_session_with_inputs::<TestRouteState, TestScenario>()
+            .unwrap();
+        assert_eq!(session.route(), TestRouteState::Detail);
+        assert_eq!(session.scenario(), Some(TestScenario::Loaded));
+        unsafe {
+            std::env::remove_var(env.route_var());
+            std::env::remove_var(env.scenario_var());
+        }
     }
 }

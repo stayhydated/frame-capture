@@ -169,3 +169,45 @@ fn scaled_dimension(long_edge: u32, dimension: u32, base: u32) -> u32 {
     ((u64::from(long_edge) * u64::from(dimension) + u64::from(base / 2)) / u64::from(base)).max(1)
         as u32
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn pixel_size_handles_nonzero_construction_and_dimensions() {
+        let width = NonZeroU32::new(20).unwrap();
+        let height = NonZeroU32::new(30).unwrap();
+        let size = PixelSize::from_nonzero(width, height);
+
+        assert_eq!(size.dimensions(), (20, 30));
+        assert_eq!(PixelSize::try_new(20, 30), Some(size));
+        assert_eq!(PixelSize::try_new(0, 30), None);
+        assert_eq!(PixelSize::try_new(20, 0), None);
+        assert!(std::panic::catch_unwind(|| PixelSize::new(0, 30)).is_err());
+    }
+
+    #[test]
+    fn long_edge_scaling_handles_portrait_and_clamps_to_one_pixel() {
+        assert_eq!(
+            PixelSize::from_long_edge(PixelSize::new(100, 200), NonZeroU32::new(50).unwrap()),
+            PixelSize::new(25, 50)
+        );
+        assert_eq!(
+            PixelSize::from_long_edge(PixelSize::new(u32::MAX, 1), NonZeroU32::new(1).unwrap()),
+            PixelSize::new(1, 1)
+        );
+    }
+
+    #[test]
+    fn pixel_size_info_exposes_serializable_metadata() {
+        let info = CapturePixelSizeInfo::from(PixelSize::new(640, 480));
+        assert_eq!(info.width(), 640);
+        assert_eq!(info.height(), 480);
+        assert_eq!(info.label(), "640x480");
+        assert_eq!(
+            serde_json::to_value(info).unwrap(),
+            serde_json::json!({"width": 640, "height": 480, "label": "640x480"})
+        );
+    }
+}

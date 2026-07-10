@@ -1,0 +1,59 @@
+error: CaptureScenario can only be derived for enums
+ --> tests/ui/capture_scenario_diagnostics.rs:2:8
+  |
+2 | struct ScenarioStruct;
+  |        ^^^^^^^^^^^^^^
+
+error: CaptureScenario can only be derived for enums with unit variants
+ --> tests/ui/capture_scenario_diagnostics.rs:6:5
+  |
+6 |     Value(u32),
+  |     ^^^^^
+
+error: CaptureScenario requires at least one enum variant
+  --> tests/ui/capture_scenario_diagnostics.rs:10:6
+   |
+10 | enum EmptyScenario {}
+   |      ^^^^^^^^^^^^^
+
+error: duplicate `crate`
+  --> tests/ui/capture_scenario_diagnostics.rs:13:43
+   |
+13 | #[capture_scenario(crate = frame_capture, crate = frame_capture)]
+   |                                           ^^^^^
+
+error: expected `crate`
+  --> tests/ui/capture_scenario_diagnostics.rs:19:20
+   |
+19 | #[capture_scenario(unknown = frame_capture)]
+   |                    ^^^^^^^
+
+error: duplicate `id`
+  --> tests/ui/capture_scenario_diagnostics.rs:26:34
+   |
+26 |     #[capture_scenario(id = "a", id = "b")]
+   |                                  ^^
+
+error: duplicate `title`
+  --> tests/ui/capture_scenario_diagnostics.rs:32:37
+   |
+32 |     #[capture_scenario(title = "A", title = "B")]
+   |                                     ^^^^^
+
+error: duplicate `description`
+  --> tests/ui/capture_scenario_diagnostics.rs:38:43
+   |
+38 |     #[capture_scenario(description = "A", description = "B")]
+   |                                           ^^^^^^^^^^^
+
+error: expected `id`, `title`, or `description`
+  --> tests/ui/capture_scenario_diagnostics.rs:44:24
+   |
+44 |     #[capture_scenario(unknown = "value")]
+   |                        ^^^^^^^
+
+error: capture id must not be empty
+  --> tests/ui/capture_scenario_diagnostics.rs:51:5
+   |
+51 |     Value,
+   |     ^^^^^
