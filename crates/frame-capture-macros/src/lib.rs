@@ -994,7 +994,9 @@ mod tests {
         R: std::panic::UnwindSafe,
         F: FnOnce() -> R + std::panic::UnwindSafe,
     {
-        let _lock = env_lock().lock().unwrap();
+        let lock = env_lock()
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         let previous_manifest = env::var_os("CARGO_MANIFEST_DIR");
         let previous_toml = env::var_os("FRAME_CAPTURE_TOML");
 
@@ -1032,6 +1034,7 @@ mod tests {
             }
         }
 
+        drop(lock);
         result.unwrap_or_else(|payload| panic::resume_unwind(payload))
     }
 
@@ -1049,7 +1052,7 @@ mod tests {
             .join("frame-capture-macros-tests")
             .join(format!("{test_name}-{}-{nanos}", process::id()));
         fs::create_dir_all(&dir).unwrap();
-        dir
+        dir.canonicalize().unwrap()
     }
 
     #[test]

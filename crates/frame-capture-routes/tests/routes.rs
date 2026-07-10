@@ -1,4 +1,4 @@
-use std::sync::atomic::{AtomicUsize, Ordering};
+use std::cell::Cell;
 
 use frame_capture_routes::{
     CaptureEnv, CaptureRoute as _, CaptureRouteId, CaptureRouteRegistration,
@@ -8,7 +8,9 @@ use frame_capture_routes::{
     registered_routes_for, validate_registered_routes_for,
 };
 
-static INSTALLS: AtomicUsize = AtomicUsize::new(0);
+std::thread_local! {
+    static INSTALLS: Cell<usize> = const { Cell::new(0) };
+}
 
 #[derive(frame_capture_routes::CaptureRouteRoutes, Clone, Copy, Debug, Eq, PartialEq)]
 #[capture_route(default = Dashboard, size = "960x540")]
@@ -31,7 +33,7 @@ enum TypedScenario {
     size = "640x480"
 )]
 fn install_root() {
-    INSTALLS.fetch_add(1, Ordering::Relaxed);
+    INSTALLS.with(|installs| installs.set(installs.get() + 1));
 }
 
 #[frame_capture_routes::capture_route(
@@ -123,10 +125,10 @@ fn registers_route_specs() {
 #[test]
 fn registered_route_installs_page() {
     let route = registered_route(&route_id("registry/root")).unwrap();
-    let before = INSTALLS.load(Ordering::Relaxed);
+    let before = INSTALLS.with(Cell::get);
     route.install();
 
-    assert_eq!(INSTALLS.load(Ordering::Relaxed), before + 1);
+    assert_eq!(INSTALLS.with(Cell::get), before + 1);
 }
 
 #[test]

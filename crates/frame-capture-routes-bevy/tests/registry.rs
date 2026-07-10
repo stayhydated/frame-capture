@@ -1,11 +1,13 @@
-use std::sync::atomic::{AtomicUsize, Ordering};
+use std::cell::Cell;
 
 use frame_capture_routes_bevy::{
     App, BevyCaptureRegistryEnvExt as _, CaptureEnv, CaptureRouteId, PixelSize, RegisteredRoute,
     RouteSpec, registered_route, registered_route_for_key, registered_routes,
 };
 
-static INSTALLS: AtomicUsize = AtomicUsize::new(0);
+std::thread_local! {
+    static INSTALLS: Cell<usize> = const { Cell::new(0) };
+}
 
 #[frame_capture_routes_bevy::capture_route(
     id = "registry/root",
@@ -14,7 +16,7 @@ static INSTALLS: AtomicUsize = AtomicUsize::new(0);
     size = "640x480"
 )]
 fn install_root(_: &mut App) {
-    INSTALLS.fetch_add(1, Ordering::Relaxed);
+    INSTALLS.with(|installs| installs.set(installs.get() + 1));
 }
 
 #[frame_capture_routes_bevy::capture_route(
@@ -55,10 +57,10 @@ fn registers_route_specs() {
 fn registered_route_installs_page() {
     let route = registered_route(&route_id("registry/root")).unwrap();
     let mut app = App::new();
-    let before = INSTALLS.load(Ordering::Relaxed);
+    let before = INSTALLS.with(Cell::get);
     route.install(&mut app);
 
-    assert_eq!(INSTALLS.load(Ordering::Relaxed), before + 1);
+    assert_eq!(INSTALLS.with(Cell::get), before + 1);
 }
 
 #[test]

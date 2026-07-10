@@ -1,5 +1,14 @@
 name: Install Linux dependencies
 description: Installs necessary dependencies to build on Linux.
+inputs:
+  wayland:
+    description: Install Wayland development libraries (libwayland-dev)
+    required: false
+    default: "true"
+  vulkan:
+    description: Install the Mesa Vulkan software driver (mesa-vulkan-drivers)
+    required: false
+    default: "true"
 
 runs:
   using: composite
@@ -11,4 +20,5 @@ runs:
         sudo apt-get update
 
         sudo apt-get install --no-install-recommends
-        libwayland-dev
+        ${{ fromJSON(inputs.wayland) && 'libwayland-dev' || '' }}
+        ${{ fromJSON(inputs.vulkan) && 'mesa-vulkan-drivers' || '' }}
