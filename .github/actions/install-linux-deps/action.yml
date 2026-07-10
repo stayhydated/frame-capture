@@ -1,0 +1,14 @@
+name: Install Linux dependencies
+description: Installs necessary dependencies to build on Linux.
+
+runs:
+  using: composite
+  steps:
+    - name: Install Linux dependencies
+      shell: bash
+      if: ${{ runner.os == 'linux' }}
+      run: >
+        sudo apt-get update
+
+        sudo apt-get install --no-install-recommends
+        libwayland-dev

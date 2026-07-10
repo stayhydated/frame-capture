@@ -13,7 +13,7 @@ clippy:
     cargo clippy --workspace --all-features --all-targets --locked -- -D warnings
 
 check:
-    cargo check --workspace --all-features
+    cargo check --workspace --all-features --all-targets --locked
 
 test:
     cargo test --workspace --all-features --all-targets --locked
