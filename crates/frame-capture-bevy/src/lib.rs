@@ -1,8 +1,9 @@
-//! Bevy facade for `frame-capture`.
+//! Bevy facade for `frame-capture` route selection and offscreen screenshots.
 //!
-//! In capture mode, the facade configures Bevy without a primary window, runs
-//! on `ScheduleRunnerPlugin`, redirects cameras to an offscreen image, saves
-//! that image through Bevy's screenshot API, then emits `AppExit::Success`.
+//! Live mode uses the provided Bevy plugin group normally. In capture mode, the
+//! facade configures Bevy without a primary window, runs on
+//! `ScheduleRunnerPlugin`, redirects cameras to an offscreen image, saves that
+//! image through Bevy's screenshot API, then emits `AppExit::Success`.
 
 mod plugins;
 mod runtime;

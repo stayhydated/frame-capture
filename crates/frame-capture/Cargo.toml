@@ -1,7 +1,7 @@
 [package]
 name = "frame-capture"
 version = "0.1.0"
-description = "Target-neutral route and capture-session primitives for wgpu-backed app screenshots."
+description = "Target-neutral route and capture-session primitives for Rust application screenshots."
 edition.workspace = true
 license.workspace = true
 rust-version.workspace = true

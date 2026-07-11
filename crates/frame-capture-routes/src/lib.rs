@@ -1,8 +1,10 @@
 //! Route-only capture facade for `frame-capture`.
 //!
-//! Use this crate directly for render stacks such as egui and GPUI where route
-//! registration does not need framework-specific types. Framework facades with
-//! custom installer signatures, such as Bevy, can reuse the generic helpers.
+//! Use this crate for applications that own their renderer and screenshot
+//! pipeline, including egui, GPUI, and raw wgpu applications. It provides typed
+//! route sessions and registered function routes without selecting a graphics
+//! backend. Framework facades with custom installer signatures, such as Bevy,
+//! can reuse the generic registry helpers.
 
 use frame_capture::CaptureEnvError;
 pub use frame_capture::{

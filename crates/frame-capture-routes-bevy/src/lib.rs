@@ -1,8 +1,9 @@
 //! Bevy `App` route-registration facade for `frame-capture`.
 //!
 //! This crate owns the Bevy-specific route registry surface: registered routes
-//! install themselves through `fn(&mut App)`. It deliberately does not include
-//! the Bevy screenshot runtime from `frame-capture-bevy`.
+//! install themselves through `fn(&mut App)`. Use it for host-owned Bevy capture
+//! pipelines, or through the `registry` feature of `frame-capture-bevy` when the
+//! app needs the shared Bevy screenshot runtime.
 
 pub use bevy_app::App;
 pub use frame_capture::{

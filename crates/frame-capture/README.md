@@ -1,12 +1,12 @@
 # frame-capture
 
-Target-neutral route and capture-session primitives for wgpu-backed
-application screenshots.
+Target-neutral route and capture-session primitives for Rust application
+screenshots.
 
 This crate intentionally stops at the shared protocol: route specs, capture
 dimensions, environment parsing, output paths, scenarios, and frame gating.
 Renderer facades such as Bevy or an app-owned egui/GPUI integration own the
-texture and screenshot mechanics.
+graphics backend, texture, and screenshot mechanics.
 
 ## Use
 

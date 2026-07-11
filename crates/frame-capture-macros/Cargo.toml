@@ -1,7 +1,7 @@
 [package]
 name = "frame-capture-macros"
 version = "0.1.0"
-description = "Proc macros for frame-capture route declarations."
+description = "Proc macros for frame-capture route, scenario, and registered-route declarations."
 edition.workspace = true
 license.workspace = true
 rust-version.workspace = true

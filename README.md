@@ -5,20 +5,23 @@
 [![Docs](https://docs.rs/frame-capture/badge.svg)](https://docs.rs/frame-capture/)
 [![Crates.io](https://img.shields.io/crates/v/frame-capture.svg)](https://crates.io/crates/frame-capture)
 
-Deterministic screenshot capture for wgpu-backed Rust applications.
+Deterministic screenshot capture workflows for Rust applications.
 
 `frame-capture` gives an app a typed route catalog, a small environment-variable
 protocol, and capture session metadata. The app chooses the route to render in
 normal live mode or capture mode, while the renderer-specific integration owns
-the actual window and screenshot plumbing.
+the actual window and screenshot plumbing. The shared capture protocol is
+renderer-agnostic: host integrations can use their framework's native backend,
+including GPUI's Metal renderer on macOS.
 
 ## Pick an Integration
 
 Use `frame-capture-bevy` for Bevy apps that want the shared offscreen screenshot
 runtime.
 
-Use `frame-capture-routes` for egui, GPUI, raw wgpu, or any app that already owns
-its window and screenshot pipeline.
+Use `frame-capture-routes` for any app that already owns its window and
+screenshot pipeline, including egui, GPUI, and raw wgpu applications. This
+facade supplies route and capture metadata without selecting a graphics backend.
 
 Use `frame-capture` directly when you are building a custom renderer
 integration and only need the shared route, environment, size, output-path,
@@ -185,9 +188,10 @@ must wait for async data or asset loading.
 
 ## Route-Only Apps
 
-`frame-capture-routes` is for render stacks where the host app owns the
-screenshot mechanics. It gives the app the selected route, output path, frame,
-and size, but does not prescribe how the app renders or saves pixels.
+`frame-capture-routes` is for render stacks where the host app owns the window,
+renderer, frame loop, and screenshot mechanics. It gives the app the selected
+route, output path, frame, and size without selecting a graphics API or
+prescribing how the app renders and saves pixels.
 
 ```rust
 use frame_capture_routes::{CaptureEnv, CaptureRoute as _};
@@ -360,9 +364,10 @@ Run the GPUI route-only example live:
 cargo run --manifest-path examples/gpui/Cargo.toml
 ```
 
-The GPUI example is kept outside the default workspace so normal workspace
-checks do not compile the forked Zed/GPUI `linux-headless-renderer` dependency
-graph. The `just example-gpui-captures` recipe runs GPUI through
-`cargo run --manifest-path examples/gpui/Cargo.toml`, so it does not make GPUI a
-workspace dependency. Use `just example-gpui-captures` to regenerate captures
-with GPUI's `test-support` headless renderer.
+The GPUI example has its own manifest outside the default workspace, and
+`just example-gpui-captures` invokes that manifest directly. Its capture path
+uses GPUI's `test-support` `HeadlessAppContext` and
+`gpui_platform::current_headless_renderer()`, leaving GPUI to select the native
+platform renderer. That is Metal on macOS; the fork's
+`linux-headless-renderer` branch supplies the Linux headless implementation used
+by this repository.

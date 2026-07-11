@@ -2,9 +2,10 @@
 
 Route-only capture facade for `frame-capture` applications.
 
-Use this crate for egui, GPUI, raw wgpu, or any app where route selection and
-capture metadata are shared, but rendering and screenshot saving stay owned by
-the host application.
+Use this crate for any app where route selection and capture metadata are
+shared, but rendering and screenshot saving stay owned by the host application.
+That includes egui, GPUI, and raw wgpu applications; the facade does not select
+their graphics backend.
 
 ## Use
 

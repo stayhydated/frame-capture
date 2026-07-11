@@ -1,9 +1,9 @@
 //! MCP server helpers for exposing `frame-capture` route metadata.
 //!
-//! The server is app-instantiated, because capture routes are normally
-//! compile-time enums owned by the consuming application.
-//! Servers are read-only: they list routes and return route details, but do not
-//! launch captures, save screenshots, or mutate application files.
+//! Applications instantiate a server for either an enum-backed route catalog or
+//! the registered-route inventory. Servers are read-only: they list routes and
+//! return route details, but do not launch captures, save screenshots, or mutate
+//! application files.
 
 use std::{error::Error, marker::PhantomData};
 
