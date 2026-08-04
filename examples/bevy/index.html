@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>frame-capture Bevy demo</title>
+    <base data-trunk-public-url />
+    <meta data-wasm-demo-config data-wasm-demo-name="frame-capture Bevy" />
+    <link data-trunk rel="rust" data-initializer="../scripts/trunk-loader.js" />
+    <style>
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background: #14191f;
+      }
+
+      canvas {
+        width: 100% !important;
+        height: 100% !important;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="bevy-demo"></canvas>
+  </body>
+</html>

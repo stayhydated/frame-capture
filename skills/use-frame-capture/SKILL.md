@@ -1,94 +1,49 @@
 ---
 name: use-frame-capture
-description: Use when adding, reviewing, or updating generic frame-capture integrations in Rust applications that own their renderer or screenshot pipeline, including direct frame-capture usage, frame-capture-routes, egui, GPUI, raw wgpu, custom renderer facades, route enums, registered routes, capture environment parsing, scenarios, frame gates, output paths, and route catalog metadata.
+description: Integrate, review, or refactor frame-capture in Rust applications that own their renderer or screenshot pipeline. Use when Codex needs to work with frame-capture, frame-capture-routes, egui, GPUI, raw wgpu, custom renderer facades, typed route or scenario enums, registered routes, FRAME_CAPTURE_* session parsing, frame gates, PNG output paths, CaptureLaunchEnv, or read-only frame-capture-mcp route catalogs. Use the Bevy-specific skill when frame-capture-bevy owns the offscreen runtime.
 ---
 
 # Use frame-capture
 
-## Scope Boundary
+## Choose the facade
 
-Use this public skill for route-only or target-neutral capture work in Rust
-applications that own their renderer or screenshot pipeline: direct
-`frame-capture` usage, `frame-capture-routes`, egui, GPUI, raw wgpu, custom
-renderer facades, route enums, registered routes, capture environment parsing,
-scenarios, frame gates, output paths, and route catalog metadata.
+- Use `frame-capture-routes` for an application that already renders and saves
+  screenshots.
+- Use `frame-capture` for a custom facade or target-neutral protocol layer.
+- Keep renderer-specific window, texture, readback, and image-saving code in the
+  host application or facade.
 
-Use `use-frame-capture-bevy` instead when the application wants the Bevy
-offscreen screenshot runtime. Use project-specific development guidance instead
-when maintaining a `frame-capture` implementation repository itself.
+## Follow the integration workflow
 
-## Core Workflow
+1. Inspect the host's existing startup, route, render-loop, and screenshot
+   paths.
+2. Define stable route IDs, user-facing titles, and positive default sizes.
+3. Read one session during startup with
+   `CaptureEnv::frame_capture().read_session::<Route>()?`.
+4. Use a typed input session when `FRAME_CAPTURE_SCENARIO` should seed app
+   state.
+5. Start the normal application at the selected route when `session.capture()`
+   is `None`.
+6. In capture mode, apply the scenario, render the route at `capture.size()`,
+   honor the one-based `capture.frame()` gate, create the output directory, and
+   save a PNG to `capture.path()`.
+7. Call `validate_registered_routes()` when route installers use inventory,
+   then read the selected session through its generated route key.
+8. Use `CaptureLaunchEnv::builder()` when another tool needs validated launch
+   variables. Keep process construction and spawning in that tool.
 
-Start from the application surface that owns rendering and screenshots.
-`frame-capture` provides typed route metadata and capture request data; the host
-app or facade owns renderer-specific window, texture, frame-loop, and screenshot
-mechanics.
+## Preserve these contracts
 
-1. Choose the surface: use `frame-capture-routes` for egui, GPUI, raw wgpu, and
-   apps that already own screenshot capture; use `frame-capture` directly for a
-   custom renderer integration or shared protocol layer.
-2. Follow the host app's existing route structure, startup path, and route id
-   conventions.
-3. Define a typed route catalog with explicit route ids, titles, and sizes.
-   Prefer enum-level `size = "WIDTHxHEIGHT"` unless a route needs a specific
-   override. Use enum-level `id_prefix = "desktop"` or similar when one route
-   enum is reused by a specific app surface.
-4. Read a route-only session with `CaptureEnv::frame_capture().read_session::<Route>()?`,
-   or use `read_session_with_scenario` or `read_session_with_inputs` when the
-   app supports typed scenario ids. The selected route is always available;
-   `session.capture()` is `Some` only when the capture path env var is present.
-5. In live mode, start the normal app at the selected route. In capture mode,
-   render the route at `capture.size()`, wait until `capture.frame()` if the
-   host has a frame loop, and save pixels to `capture.path()`.
-6. Map `session.scenario()` to app-owned state presets when using typed input
-   sessions.
-7. For registered routes, call `validate_registered_routes()` during startup
-   and use `read_registered_session_for::<GeneratedRouteKey>()?` to resolve the
-   default route.
-8. For tool-facing launch metadata, use `CaptureLaunchEnv::builder()`
-   to produce `FRAME_CAPTURE_*` variables from a validated route id, PNG output
-   path, nonzero frame, and all-or-nothing pixel size override. Keep command
-   construction and process launch host-owned.
-9. For tool-facing route discovery, expose a read-only `frame-capture-mcp`
-   server. Keep capture execution environment-driven and owned by the host app.
+- `FRAME_CAPTURE_PATH` alone switches the session into capture mode.
+- Width and height overrides are an all-or-nothing pair of positive values.
+- Route IDs may be relative paths; scenario IDs are single state identifiers.
+- The selected route applies in both live and capture modes.
+- MCP catalog servers expose metadata only. They do not launch applications or
+  write screenshots.
 
-## Reference Selection
+## Load detailed patterns
 
-Load only the reference needed for the task:
-
-- `references/generic-patterns.md`: route enum, capture loop, registered route, scenario, and output path patterns for concrete generic integrations.
-
-Prefer current public docs or source examples over memory when details matter.
-
-## Implementation Rules
-
-Use `frame-capture-routes` registered routes when route installers are
-distributed across modules.
-
-Route ids may be relative route paths. Scenario ids are state ids, not paths.
-
-Keep renderer-specific screenshot mechanics in the host app or facade. Generic
-integrations should resolve route, size, frame, output path, and scenario
-through the capture protocol, then pass those values into the app's existing
-rendering pipeline.
-
-When returning a launch environment to another process or agent, prefer
-`CaptureLaunchEnv::builder()` over manually assembling `FRAME_CAPTURE_ROUTE`,
-`FRAME_CAPTURE_PATH`, `FRAME_CAPTURE_FRAME`, `FRAME_CAPTURE_WIDTH`,
-`FRAME_CAPTURE_HEIGHT`, or `FRAME_CAPTURE_SCENARIO`. The builder validates route
-ids and capture values before emitting environment variables, but it does not
-spawn a process.
-
-For capture runs:
-
-- Use the selected route in both live and capture mode.
-- Use `capture.size()` for capture-mode pixel dimensions.
-- Use `capture.frame()` only as a frame gate; readiness and state preparation remain app-owned.
-- Save PNG output to `capture.path()`.
-- Apply scenarios before rendering.
-
-For MCP route catalog servers:
-
-- Keep MCP helpers read-only.
-- Do not launch captures, save screenshots, mutate files, or inspect app state beyond the supplied route catalog.
-- Keep tool names and serialized route metadata aligned with `frame-capture-mcp` tests and docs.
+Read [generic patterns](references/generic-patterns.md) for concrete enum,
+scenario, registered-route, launch-environment, and MCP snippets. Prefer the
+current public API, user guide, and repository examples over memory when a
+signature matters.
