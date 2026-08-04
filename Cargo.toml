@@ -9,6 +9,8 @@ members = [
   "crates/frame-capture-routes-bevy",
   "crates/frame-capture-toml",
   "examples/bevy",
+  "web",
+  "xtask",
 ]
 resolver = "3"
 
@@ -19,9 +21,11 @@ rust-version = "1.96"
 version = "0.1.0"
 
 [workspace.dependencies]
+anyhow = "1.0"
 bevy = { default-features = false, version = "0.19" }
 bevy_app = { default-features = false, version = "0.19" }
 bon = "3.9"
+clap = "4.6"
 darling = "0.23"
 derive_more = { default-features = false, features = [
   "as_ref",
@@ -29,6 +33,7 @@ derive_more = { default-features = false, features = [
   "display",
   "from",
 ], version = "2.1" }
+dioxus = { default-features = false, version = "0.7" }
 frame-capture = { default-features = false, path = "crates/frame-capture" }
 frame-capture-bevy = { path = "crates/frame-capture-bevy" }
 frame-capture-macros = { path = "crates/frame-capture-macros" }
@@ -47,14 +52,19 @@ rmcp = { default-features = false, features = [
   "macros",
   "server",
   "transport-io",
-], version = "2.2.0" }
+], version = "3.0" }
 schemars = "1.2"
 serde = { features = [ "derive" ], version = "1.0" }
 serde_json = "1.0"
-serde_with = { default-features = false, features = [ "macros" ], version = "3.15" }
+serde_with = { default-features = false, features = [ "macros" ], version = "3.21" }
+stayhydated-dioxus = { path = "../shared/crates/stayhydated-dioxus" }
+stayhydated-site = { path = "../shared/crates/stayhydated-site" }
+stayhydated-xtask = { path = "../shared/crates/stayhydated-xtask" }
 syn = "2.0"
 thiserror = "2.0"
 toml = "0.9"
+web = { path = "web" }
+web-sys = { features = [ "Location", "Window" ], version = "0.3" }
 
 [profile.dev]
 codegen-units = 16

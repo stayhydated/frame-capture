@@ -1,103 +1,60 @@
 ---
 name: use-frame-capture-bevy
-description: Use when adding, reviewing, or updating Bevy integrations for frame-capture, including frame-capture-bevy live and capture mode setup, offscreen screenshot runtime wiring, RoutePlugin route selection, capture_window_plugin, CaptureReady, Bevy registered-route APIs, capture env parsing, frame gates, and scenarios.
+description: Integrate, review, or refactor frame-capture-bevy in Bevy applications. Use when Codex needs to wire live and offscreen capture modes, CaptureRouteBevy or CaptureScenarioBevy, BevyCaptureSession, RoutePlugin, capture_window_plugin, CaptureReady, CaptureWarmupPlugin, Bevy state or resource mapping, registered fn(&mut App) routes, FRAME_CAPTURE_* inputs, frame gates, scenarios, or deterministic PNG output. Use the generic frame-capture skill when the host owns a non-Bevy screenshot pipeline.
 ---
 
 # Use frame-capture Bevy
 
-## Scope Boundary
+## Follow the integration workflow
 
-Use this public skill for Bevy apps that should run normally without capture
-variables and save deterministic screenshots when capture variables are present:
-live and capture mode setup, offscreen screenshot runtime wiring, `RoutePlugin`
-route selection, `capture_window_plugin`, `CaptureReady`, Bevy registered-route
-APIs, capture environment parsing, frame gates, and scenarios.
-
-Use `use-frame-capture` instead when the application owns its renderer or
-screenshot pipeline outside the Bevy capture runtime. Use project-specific
-development guidance instead when maintaining a `frame-capture` implementation
-repository itself.
-
-## Core Workflow
-
-Start from the application's existing Bevy setup and route structure. Preserve
-live behavior when capture variables are absent; `frame-capture-bevy` owns the
-Bevy offscreen screenshot runtime, and app code owns route-specific scene setup
-and state.
-
-1. Define routes with `frame_capture_bevy::CaptureRouteBevy` and
-   `#[capture_route(default = ..., size = "...")]`.
-2. Read the session before building the app:
-   `let session = CaptureEnv::frame_capture().read_bevy_session::<Route>()?;`.
-   Use `read_bevy_session_with_scenario` or `read_bevy_session_with_inputs`
-   when the app supports typed scenario ids. Plain `read_bevy_session` rejects
-   scenario variables.
-3. Compute the Bevy window resolution from `session.window_resolution()` unless
-   the live app has its own explicit size override. Use a scale factor override
-   of `1.0` for deterministic pixels.
-4. Add Bevy plugins through
+1. Inspect the existing Bevy plugin, route, state, camera, and startup setup.
+2. Define stable routes with `CaptureRouteBevy` and positive default sizes.
+3. Read the session before constructing `App`. Use
+   `read_bevy_session_with_scenario` when scenario IDs seed app state; plain
+   `read_bevy_session` rejects a supplied scenario.
+4. Build the live window with `session.window_resolution()` or
+   `window_resolution_with_live_size`.
+5. Add `DefaultPlugins` only through
    `session.add_capture_plugins(&mut app, DefaultPlugins.set(session.capture_window_plugin(window)))`.
-   This preserves normal Bevy plugin behavior in live mode and configures the
-   offscreen runtime in capture mode.
-5. Install route-specific systems or plugins through
-   `RoutePlugin::new(session.route(), |route, app| { ... })`.
-6. When the selected capture route should drive Bevy schedules, derive Bevy
-   `States` on the route enum and call `session.add_route_state(&mut app)`. If
-   the route enum lives in a target-neutral core crate, keep it free of Bevy
-   traits and call `session.add_selected_resources(&mut app)` so systems can
-   read `SelectedCaptureRoute<Route>`, or use
-   `session.add_mapped_route_state(&mut app, ...)` when the selected route maps
-   to an app-owned Bevy state.
-7. Apply capture scenarios through
-   `ScenarioPlugin::new(session.scenario(), |scenario, app| { ... })` when
-   scenario ids should seed app-owned plugins or larger setup. Use
-   `session.add_scenario_state(&mut app, default_state)` when the scenario enum
-   itself is a Bevy `State`, `session.add_mapped_scenario_state(&mut app, ...)`
-   when it maps to an app state,
-   `session.insert_mapped_scenario_resource(&mut app, ...)` when it seeds an app
-   resource, or `session.add_selected_resources(&mut app)` when systems need the
-   optional typed scenario without a Bevy dependency in the scenario crate.
-8. Insert `CaptureReady::pending()` only when capture must wait for async state
-   or assets, then call `mark_ready()` from a system. Use
-   `CaptureWarmupPlugin::frames(n)` for a fixed frame delay.
-9. Enable the `registry` feature only when route installers should be registered
-   as `fn(&mut App)` inventory entries.
+6. Install route-specific behavior with `RoutePlugin`, a session state/resource
+   helper, or a registered route installer.
+7. Spawn capture cameras and scene content by `Startup`, before the offscreen
+   target is assigned in `PostStartup`.
+8. Use `CaptureReady::pending()` for asynchronous preparation and mark it ready
+   from a system. Use `CaptureWarmupPlugin::frames(n)` for a fixed delay.
+9. Run the app normally. Capture mode saves the requested PNG and exits through
+   `AppExit`.
 
-## Reference Selection
+## Map selected inputs deliberately
 
-Load only the reference needed for the task:
+- Use `add_route_state` when the route enum itself drives Bevy state schedules.
+- Use `add_scenario_state` when the scenario enum is a Bevy state and live mode
+  has an explicit fallback.
+- Use `add_selected_resources` for target-neutral route and scenario enums.
+- Use the mapped state helpers for app-owned Bevy states.
+- Use the mapped resource helpers for app-owned resources.
 
-- `references/bevy-patterns.md`: copyable app setup, readiness, scenario, and registry patterns for concrete Bevy integrations.
+## Use registered routes
 
-Prefer current public docs or source examples over memory when details matter.
+Enable the `registry` feature only for inventory-backed `fn(&mut App)` route
+installers. Validate the registry, resolve the session, configure the capture
+window and runtime from `session.capture()`, then call
+`session.install(&mut app)` before `app.run()`.
 
-## Implementation Rules
+## Preserve these contracts
 
-Live mode should keep normal Bevy plugin behavior.
+- Live mode keeps the supplied Bevy plugin group's normal behavior.
+- Capture mode disables `WinitPlugin`, removes the primary window, runs the
+  schedule runner, redirects cameras to an offscreen image, and saves the PNG.
+- Route, scenario, size, frame, output path, readiness, and warmup inputs must
+  all affect the capture as documented.
+- The output directory must exist before Bevy saves the image.
+- MCP route catalogs remain read-only; the Bevy application owns capture
+  execution.
 
-Capture mode should disable the primary window path, use the schedule runner,
-render to an offscreen image, save a PNG, and exit successfully.
+## Load detailed patterns
 
-Respect the requested route, size, frame, output path, scenario, and
-`CaptureReady`.
-
-When tool-facing route discovery is needed, expose route metadata through a
-read-only `frame-capture-mcp` server and keep capture execution owned by the
-Bevy app's environment-driven startup path.
-
-Keep capture-specific state explicit:
-
-- Use `CaptureReady::pending()` only when a capture must wait for asynchronous preparation.
-- Call `mark_ready()` from a system once assets, state, or route setup are ready.
-- Use `CaptureWarmupPlugin::frames(n)` for fixed frame-count stabilization.
-- Use `ScenarioPlugin` to apply scenario state before capture readiness is marked.
-- Use `session.add_route_state`, `session.add_scenario_state`, or `SelectedStatePlugin` when capture inputs should become Bevy `State` resources for `OnEnter` schedules and `in_state` run conditions.
-- Use `session.add_mapped_route_state` or `session.add_mapped_scenario_state` when target-neutral capture ids map to app-owned Bevy states.
-- Use `RouteResourcePlugin` or `ScenarioResourcePlugin` when target-neutral capture enums should be readable from Bevy systems without deriving Bevy traits; `session.add_selected_resources` installs selected input resources from a Bevy capture session.
-- Use `session.insert_mapped_route_resource` or `session.insert_mapped_scenario_resource` when capture inputs should seed app-owned resources.
-
-Keep route wiring explicit:
-
-- Use `RoutePlugin` for route-specific systems and plugins.
-- Keep enum routes and registered-route installers aligned when both are present.
-- Keep the `registry` feature gate accurate when reexporting or consuming Bevy registered-route APIs.
+Read [Bevy patterns](references/bevy-patterns.md) for typed setup, state and
+resource mapping, readiness, and registered-route wiring. Prefer the current
+public API, user guide, and repository Bevy example over memory when a signature
+matters.

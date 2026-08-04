@@ -7,6 +7,10 @@ license.workspace = true
 publish = false
 rust-version.workspace = true
 
+[[example]]
+name = "bevy-demo"
+path = "src/bevy_demo.rs"
+
 [dependencies]
 bevy = { features = [
   "bevy_core_pipeline",
@@ -16,6 +20,9 @@ bevy = { features = [
   "default_font",
 ], workspace = true }
 frame-capture-bevy.workspace = true
+
+[target.'cfg(target_family = "wasm")'.dependencies]
+bevy = { features = [ "webgpu" ], workspace = true }
 
 [lints]
 workspace = true

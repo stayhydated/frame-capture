@@ -16,10 +16,17 @@ pub use frame_capture::{
     CaptureRouteInfo,
 };
 use rmcp::{
-    ServerHandler, ServiceExt as _,
-    handler::server::{router::tool::ToolRouter, wrapper::Json, wrapper::Parameters},
-    model::{ServerCapabilities, ServerInfo},
-    schemars, tool, tool_handler, tool_router,
+    ErrorData, RoleServer, ServerHandler, ServiceExt as _,
+    handler::server::{
+        router::tool::ToolRouter, tool::ToolCallContext, wrapper::Json, wrapper::Parameters,
+    },
+    model::{
+        CacheScope, CallToolRequestParams, CallToolResponse, Implementation, ListToolsResult,
+        MetaObject, PaginatedRequestParams, ProtocolVersion, ServerCapabilities, ServerInfo,
+    },
+    schemars,
+    service::RequestContext,
+    tool, tool_handler, tool_router,
 };
 use serde::Deserialize;
 use thiserror::Error;
@@ -32,20 +39,12 @@ pub struct CaptureRouteRequest {
 
 #[derive(Clone, Debug)]
 pub struct CaptureRoutesServer<R: CaptureRoute> {
-    #[expect(
-        dead_code,
-        reason = "rmcp's tool_router macro requires the router field even though user code never reads it"
-    )]
     tool_router: ToolRouter<Self>,
     route: PhantomData<R>,
 }
 
 #[derive(Clone, Debug)]
 pub struct RegisteredCaptureRoutesServer {
-    #[expect(
-        dead_code,
-        reason = "rmcp's tool_router macro requires the router field even though user code never reads it"
-    )]
     tool_router: ToolRouter<Self>,
 }
 
@@ -137,18 +136,107 @@ impl<R> ServerHandler for CaptureRoutesServer<R>
 where
     R: CaptureRoute + Send + Sync,
 {
+    async fn call_tool(
+        &self,
+        request: CallToolRequestParams,
+        context: RequestContext<RoleServer>,
+    ) -> Result<CallToolResponse, ErrorData> {
+        let context = ToolCallContext::new(self, request, context);
+        let mut response = self.tool_router.call(context).await?;
+        if let CallToolResponse::Complete(result) = &mut response {
+            result.meta = Some(server_result_meta("frame-capture"));
+        }
+        Ok(response)
+    }
+
+    async fn list_tools(
+        &self,
+        _request: Option<PaginatedRequestParams>,
+        context: RequestContext<RoleServer>,
+    ) -> Result<ListToolsResult, ErrorData> {
+        Ok(tool_list_result(
+            &self.tool_router,
+            context.protocol_version().as_ref(),
+            "frame-capture",
+        ))
+    }
+
     fn get_info(&self) -> ServerInfo {
         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+            .with_protocol_version(ProtocolVersion::V_2026_07_28)
+            .with_server_info(Implementation::new(
+                "frame-capture",
+                env!("CARGO_PKG_VERSION"),
+            ))
             .with_instructions("Expose frame-capture route metadata.")
     }
 }
 
 #[tool_handler]
 impl ServerHandler for RegisteredCaptureRoutesServer {
+    async fn call_tool(
+        &self,
+        request: CallToolRequestParams,
+        context: RequestContext<RoleServer>,
+    ) -> Result<CallToolResponse, ErrorData> {
+        let context = ToolCallContext::new(self, request, context);
+        let mut response = self.tool_router.call(context).await?;
+        if let CallToolResponse::Complete(result) = &mut response {
+            result.meta = Some(server_result_meta("frame-capture-registered-routes"));
+        }
+        Ok(response)
+    }
+
+    async fn list_tools(
+        &self,
+        _request: Option<PaginatedRequestParams>,
+        context: RequestContext<RoleServer>,
+    ) -> Result<ListToolsResult, ErrorData> {
+        Ok(tool_list_result(
+            &self.tool_router,
+            context.protocol_version().as_ref(),
+            "frame-capture-registered-routes",
+        ))
+    }
+
     fn get_info(&self) -> ServerInfo {
         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+            .with_protocol_version(ProtocolVersion::V_2026_07_28)
+            .with_server_info(Implementation::new(
+                "frame-capture-registered-routes",
+                env!("CARGO_PKG_VERSION"),
+            ))
             .with_instructions("Expose registered frame-capture route metadata.")
     }
+}
+
+fn tool_list_result<S>(
+    tool_router: &ToolRouter<S>,
+    protocol_version: Option<&ProtocolVersion>,
+    server_name: &str,
+) -> ListToolsResult
+where
+    S: Send + Sync + 'static,
+{
+    let mut result = ListToolsResult::with_all_items(tool_router.list_all());
+    if protocol_version.is_some_and(|version| version >= &ProtocolVersion::V_2026_07_28) {
+        result.ttl_ms = Some(0);
+        result.cache_scope = Some(CacheScope::Private);
+    }
+    result.meta = Some(server_result_meta(server_name));
+    result
+}
+
+fn server_result_meta(server_name: &str) -> MetaObject {
+    let mut meta = MetaObject::default();
+    meta.0.insert(
+        "io.modelcontextprotocol/serverInfo".to_string(),
+        rmcp::serde_json::json!({
+            "name": server_name,
+            "version": env!("CARGO_PKG_VERSION"),
+        }),
+    );
+    meta
 }
 
 /// Lists route metadata for an enum-backed route catalog.
@@ -310,6 +398,8 @@ mod tests {
             info.instructions.as_deref(),
             Some("Expose frame-capture route metadata.")
         );
+        assert_eq!(info.protocol_version, ProtocolVersion::V_2026_07_28);
+        assert_eq!(info.server_info.name, "frame-capture");
 
         let error = CaptureRoutesServer::<InvalidRoute>::default()
             .list_capture_routes()
@@ -350,5 +440,7 @@ mod tests {
             info.instructions.as_deref(),
             Some("Expose registered frame-capture route metadata.")
         );
+        assert_eq!(info.protocol_version, ProtocolVersion::V_2026_07_28);
+        assert_eq!(info.server_info.name, "frame-capture-registered-routes");
     }
 }
