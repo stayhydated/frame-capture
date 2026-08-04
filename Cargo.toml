@@ -52,7 +52,7 @@ rmcp = { default-features = false, features = [
   "macros",
   "server",
   "transport-io",
-], version = "3.0" }
+], version = "3.1" }
 schemars = "1.2"
 serde = { features = [ "derive" ], version = "1.0" }
 serde_json = "1.0"

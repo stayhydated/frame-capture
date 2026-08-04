@@ -13,7 +13,7 @@ gpui-component = { git = "https://github.com/longbridge/gpui-component" }
 gpui_wgpu = { branch = "linux-headless-renderer", features = [
   "font-kit",
 ], git = "https://github.com/stayhydated/zed" }
-image = { default-features = false, features = [ "png" ], version = "0.25.5" }
+image = { default-features = false, features = [ "png" ], version = "0.25.10" }
 
 frame-capture-routes = { default-features = false, features = [
   "macros",
