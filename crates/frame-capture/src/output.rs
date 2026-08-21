@@ -470,7 +470,7 @@ fn validate_output_path(value: &Path) -> Result<(), CaptureOutputPathError> {
 
 #[cfg(test)]
 mod tests {
-    use std::{borrow::Borrow as _, path::Path};
+    use std::path::Path;
 
     use super::*;
 

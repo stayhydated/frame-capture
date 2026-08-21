@@ -323,7 +323,7 @@ pub async fn serve_registered_capture_routes_stdio() -> Result<(), Box<dyn Error
 
 #[cfg(test)]
 mod tests {
-    use frame_capture::{CaptureRoute as _, PixelSize};
+    use frame_capture::PixelSize;
 
     use super::*;
 

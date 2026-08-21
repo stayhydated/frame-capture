@@ -664,8 +664,6 @@ const fn is_invalid_route_component_const(bytes: &[u8], start: usize, end: usize
 
 #[cfg(test)]
 mod tests {
-    use std::borrow::Borrow as _;
-
     use super::*;
 
     #[test]
