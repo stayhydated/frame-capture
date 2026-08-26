@@ -46,6 +46,10 @@ server exposes `list_registered_capture_routes` and
 `get_registered_capture_route`, and reports duplicate registration IDs as
 errors.
 
+Both MCP servers remain available across requests until EOF, cancellation, or
+another explicit host shutdown signal. Serving one request and then
+terminating is an application policy rather than tool-dispatch behavior.
+
 To verify either server, configure its binary as a stdio MCP server, list the
 available tools, and call the list tool. A successful response contains every
 route in the typed catalog. An unknown ID passed to a get tool returns the

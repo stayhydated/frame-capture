@@ -89,3 +89,4 @@ The builder validates protocol values but does not create or launch a process.
 Use `frame_capture_mcp::serve_capture_routes_stdio::<UiRoute>()` for an enum
 catalog or `serve_registered_capture_routes_stdio()` for inventory-backed
 routes. Keep capture execution in the environment-driven host application.
+Retain the server across requests; request completion does not imply shutdown.

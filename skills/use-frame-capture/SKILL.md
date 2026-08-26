@@ -40,6 +40,8 @@ description: Integrate, review, or refactor frame-capture in Rust applications t
 - The selected route applies in both live and capture modes.
 - MCP catalog servers expose metadata only. They do not launch applications or
   write screenshots.
+- Treat MCP catalog servers as long-lived. EOF, cancellation, or another
+  application-owned signal ends the host explicitly.
 
 ## Load detailed patterns
 
