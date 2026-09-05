@@ -4,8 +4,8 @@ use frame_capture_example_gpui::{GpuiExampleRoute, GpuiExampleScenario};
 use frame_capture_routes::{
     CaptureConfig, CaptureEnv, CaptureRoute as _, CaptureScenario as _, PixelSize,
 };
-use gpui::*;
-use gpui_component::{Root, badge::Badge, h_flex, progress::Progress, v_flex};
+use gpui_kit::component::{Root, badge::Badge, h_flex, progress::Progress, v_flex};
+use gpui_kit::*;
 use image::{RgbaImage, imageops::FilterType};
 
 #[derive(Clone, Copy)]
@@ -50,7 +50,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let app = gpui_platform::application();
     app.run(move |cx: &mut App| {
-        gpui_component::init(cx);
+        gpui_kit::init(cx);
         cx.activate(true);
 
         let options = window_options(title, size, cx);
@@ -411,7 +411,7 @@ fn save_native_capture(
 ) -> Result<(), Box<dyn Error>> {
     use std::{fs, sync::Arc, time::Duration};
 
-    use gpui::HeadlessAppContext;
+    use gpui_kit::HeadlessAppContext;
 
     if let Some(parent) = capture
         .path()
@@ -429,13 +429,13 @@ fn save_native_capture(
     );
 
     cx.update(|cx| {
-        gpui_component::init(cx);
+        gpui_kit::init(cx);
     });
 
     let capture_for_view = capture.clone();
     let routes = route_summaries();
     let window = cx.open_window(
-        gpui::size(px(size.width() as f32), px(size.height() as f32)),
+        gpui_kit::size(px(size.width() as f32), px(size.height() as f32)),
         move |window, cx| {
             let view = cx.new(|_| ExampleApp {
                 capture: Some(capture_for_view),

@@ -8,8 +8,7 @@ publish = false
 rust-version = "1.98"
 
 [dependencies]
-gpui = { branch = "linux-headless-renderer", git = "https://github.com/stayhydated/zed", version = "0.2.2" }
-gpui-component = { git = "https://github.com/stayhydated/gpui-component", rev = "33f25d368447a47ab5da2c674b2e833826c79fb1" }
+gpui-kit = "0.6.0"
 gpui_wgpu = { branch = "linux-headless-renderer", features = [
   "font-kit",
 ], git = "https://github.com/stayhydated/zed" }
@@ -26,6 +25,5 @@ gpui_platform = { branch = "linux-headless-renderer", features = [
   "runtime_shaders",
 ], git = "https://github.com/stayhydated/zed" }
 
-[patch."https://github.com/zed-industries/zed"]
-gpui = { branch = "linux-headless-renderer", git = "https://github.com/stayhydated/zed", version = "=0.2.2" }
-gpui_macros = { branch = "linux-headless-renderer", git = "https://github.com/stayhydated/zed", version = "0.1.0" }
+[patch.crates-io]
+gpui-pre = { branch = "linux-headless-renderer", git = "https://github.com/stayhydated/zed" }
