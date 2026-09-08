@@ -4,6 +4,9 @@ version = "0.1.0"
 description = "Proc macros for frame-capture route, scenario, and registered-route declarations."
 edition.workspace = true
 license.workspace = true
+publish.workspace = true
+readme.workspace = true
+repository.workspace = true
 rust-version.workspace = true
 
 [lib]
@@ -19,7 +22,7 @@ quote.workspace = true
 syn.workspace = true
 
 [dev-dependencies]
-frame-capture = { default-features = false, path = "../frame-capture" }
+frame-capture = { default-features = false, path = "../frame-capture", version = "0.1.0" }
 trybuild = "1.0"
 
 [lints]
