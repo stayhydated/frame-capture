@@ -2,6 +2,7 @@
 
 [![Build Status](https://github.com/stayhydated/frame-capture/actions/workflows/ci.yml/badge.svg)](https://github.com/stayhydated/frame-capture/actions/workflows/ci.yml)
 [![Codecov](https://codecov.io/github/stayhydated/frame-capture/graph/badge.svg?token=34CV04UOU1)](https://codecov.io/github/stayhydated/frame-capture)
+[![Book](https://img.shields.io/badge/docs-book-black)](https://stayhydated.github.io/frame-capture/book/)
 [![Docs](https://docs.rs/frame-capture/badge.svg)](https://docs.rs/frame-capture/)
 [![Crates.io](https://img.shields.io/crates/v/frame-capture.svg)](https://crates.io/crates/frame-capture)
 
