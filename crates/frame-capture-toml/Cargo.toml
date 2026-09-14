@@ -1,10 +1,10 @@
 [package]
 name = "frame-capture-toml"
-version = "0.1.0"
+version = "0.2.0"
 description = "TOML parsing helpers for shared frame-capture defaults."
 edition.workspace = true
 license.workspace = true
-repository = "https://github.com/stayhydated/frame-capture"
+repository.workspace = true
 rust-version.workspace = true
 
 [dependencies]

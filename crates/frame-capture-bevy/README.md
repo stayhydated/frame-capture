@@ -8,7 +8,7 @@ PNG capture runtime.
 ```toml
 [dependencies]
 bevy = "0.19"
-frame-capture-bevy = "0.1"
+frame-capture-bevy = "0.2"
 ```
 
 A Bevy integration follows four steps:

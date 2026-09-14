@@ -1,9 +1,10 @@
 [package]
 name = "frame-capture-routes-bevy"
-version = "0.1.0"
+version = "0.2.0"
 description = "Bevy App route-registration facade for frame-capture."
 edition.workspace = true
 license.workspace = true
+repository.workspace = true
 rust-version.workspace = true
 
 [features]

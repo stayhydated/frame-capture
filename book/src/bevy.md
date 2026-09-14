@@ -107,7 +107,7 @@ window and capture runtime before installing the route:
 
 ```toml
 [dependencies]
-frame-capture-bevy = { version = "0.1", features = ["registry"] }
+frame-capture-bevy = { version = "0.2", features = ["registry"] }
 ```
 
 ```rust,ignore

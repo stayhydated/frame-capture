@@ -1,9 +1,10 @@
 [package]
 name = "frame-capture-bevy"
-version = "0.1.0"
+version = "0.2.0"
 description = "Bevy facade for frame-capture offscreen screenshots and route plugins."
 edition.workspace = true
 license.workspace = true
+repository.workspace = true
 rust-version.workspace = true
 
 [features]

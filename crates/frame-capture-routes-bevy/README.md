@@ -10,7 +10,7 @@ when another runtime owns window setup, rendering, and screenshot output.
 
 ```toml
 [dependencies]
-frame-capture-routes-bevy = "0.1"
+frame-capture-routes-bevy = "0.2"
 ```
 
 Declare installers with `#[frame_capture_routes_bevy::capture_route(...)]`,

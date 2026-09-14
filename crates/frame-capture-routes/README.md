@@ -8,7 +8,7 @@ and other host-rendered applications.
 
 ```toml
 [dependencies]
-frame-capture-routes = "0.1"
+frame-capture-routes = "0.2"
 ```
 
 Define routes with `CaptureRouteRoutes`, then read one session during startup:

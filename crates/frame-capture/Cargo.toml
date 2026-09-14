@@ -1,9 +1,10 @@
 [package]
 name = "frame-capture"
-version = "0.1.0"
+version = "0.2.0"
 description = "Target-neutral route and capture-session primitives for Rust application screenshots."
 edition.workspace = true
 license.workspace = true
+repository.workspace = true
 rust-version.workspace = true
 
 [features]
@@ -23,7 +24,9 @@ serde_with.workspace = true
 thiserror.workspace = true
 
 [dev-dependencies]
+frame-capture-macros.workspace = true
 serde_json.workspace = true
+trybuild = "1.0"
 
 [lints]
 workspace = true

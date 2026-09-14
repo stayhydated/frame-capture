@@ -10,8 +10,8 @@ Add the catalog and async runtime dependencies:
 
 ```toml
 [dependencies]
-frame-capture = "0.1"
-frame-capture-mcp = "0.1"
+frame-capture = "0.2"
+frame-capture-mcp = "0.2"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 ```
 
