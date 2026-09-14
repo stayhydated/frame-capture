@@ -18,7 +18,7 @@ offscreen captures from the same binary:
 ```toml
 [dependencies]
 bevy = "0.19"
-frame-capture-bevy = "0.1"
+frame-capture-bevy = "0.2"
 ```
 
 Enable its `registry` feature only when route installers are distributed as
@@ -33,7 +33,7 @@ loop, pixel readback, and PNG save operation:
 
 ```toml
 [dependencies]
-frame-capture-routes = "0.1"
+frame-capture-routes = "0.2"
 ```
 
 The facade selects and validates the route, scenario, size, frame, and output
@@ -46,7 +46,7 @@ layer:
 
 ```toml
 [dependencies]
-frame-capture = "0.1"
+frame-capture = "0.2"
 ```
 
 Use [route-only applications](route_only.md) for the host-owned capture

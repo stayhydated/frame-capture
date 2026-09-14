@@ -9,7 +9,7 @@ with an existing screenshot pipeline normally use `frame-capture-routes`.
 
 ```toml
 [dependencies]
-frame-capture = "0.1"
+frame-capture = "0.2"
 ```
 
 The default `macros` feature provides the `CaptureRoute` and `CaptureScenario`
