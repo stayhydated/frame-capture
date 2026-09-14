@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "TOML parsing helpers for shared frame-capture defaults."
 edition.workspace = true
 license.workspace = true
+repository = "https://github.com/stayhydated/frame-capture"
 rust-version.workspace = true
 
 [dependencies]
