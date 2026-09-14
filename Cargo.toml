@@ -46,7 +46,7 @@ fs-err = "3.3"
 heck = "0.5"
 image = { default-features = false, features = [ "png" ], version = "0.25" }
 inventory = "0.3"
-koruma = { default-features = false, version = "0.10" }
+koruma = { default-features = false, version = "0.12" }
 proc-macro2 = "1.0"
 quote = "1.0"
 rmcp = { default-features = false, features = [
