@@ -72,6 +72,8 @@ session.install();
 ```
 
 The macro derives the key name from the function:
-`install_dashboard` creates `InstallDashboardRoute`. Use `key = MyRouteKey` to
-choose an explicit key. Call `validate_registered_routes()` during startup or
-tests so duplicate route IDs fail before a capture begins.
+`install_dashboard` creates `InstallDashboardRoute`. The key supplies the
+default route; `FRAME_CAPTURE_ROUTE` can select another route in the registry.
+Use `key = MyRouteKey` to choose an explicit key. Call
+`validate_registered_routes()` during startup or tests so duplicate route IDs
+fail before a capture begins.

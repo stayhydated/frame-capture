@@ -1,9 +1,9 @@
 # frame-capture
 
-[![Build Status](https://github.com/stayhydated/frame-capture/actions/workflows/ci.yml/badge.svg)](https://github.com/stayhydated/frame-capture/actions/workflows/ci.yml)
-[![Codecov](https://codecov.io/github/stayhydated/frame-capture/graph/badge.svg?token=34CV04UOU1)](https://codecov.io/github/stayhydated/frame-capture)
-[![Docs](https://docs.rs/frame-capture/badge.svg)](https://docs.rs/frame-capture/)
-[![Crates.io](https://img.shields.io/crates/v/frame-capture.svg)](https://crates.io/crates/frame-capture)
+[![CI](https://github.com/stayhydated/frame-capture/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/stayhydated/frame-capture/actions/workflows/ci.yml)
+[![Codecov](https://codecov.io/gh/stayhydated/frame-capture/branch/master/graph/badge.svg)](https://codecov.io/gh/stayhydated/frame-capture)
+[![Book](https://img.shields.io/badge/book-online-blue)](https://stayhydated.github.io/frame-capture/book/)
+[![crates.io](https://img.shields.io/crates/v/frame-capture.svg)](https://crates.io/crates/frame-capture)
 
 Typed route selection and deterministic PNG capture for Rust UI applications.
 `frame-capture` uses the same route catalog for normal launches, capture runs,
@@ -21,20 +21,17 @@ and tool-facing discovery.
 
 ## Capture a route
 
-Set a route and PNG output path when launching the application:
+From the repository root, capture the Bevy example dashboard:
 
 ```sh
-FRAME_CAPTURE_ROUTE=dashboard \
-FRAME_CAPTURE_PATH=captures/dashboard.png \
-cargo run -p my-app
+FRAME_CAPTURE_ROUTE=bevy/dashboard \
+FRAME_CAPTURE_PATH=target/dashboard.png \
+cargo run -p frame-capture-example-bevy
 ```
 
 `FRAME_CAPTURE_PATH` enables capture mode. Without it, the selected route runs
 normally. The Bevy facade saves the PNG itself; route-only integrations pass the
 validated route, size, frame, and path to their existing screenshot pipeline.
 
-## Documentation
-
-- [User guide](https://stayhydated.github.io/frame-capture/book/)
-- [API documentation](https://docs.rs/frame-capture/)
-- [Project site](https://stayhydated.github.io/frame-capture/)
+A successful run prints `Screenshot saved to target/dashboard.png`, writes the
+PNG, and exits.

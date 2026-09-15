@@ -6,6 +6,9 @@ passes them to its existing renderer.
 
 ## Run the host renderer
 
+The renderer and directory helper below stand for application-owned code.
+Connect them to your existing frame loop, pixel readback, and PNG writer:
+
 ```rust,ignore
 let session = frame_capture_routes::CaptureEnv::frame_capture()
     .read_session::<UiRoute>()?;
@@ -21,9 +24,8 @@ match session.capture() {
 }
 ```
 
-The protocol does not replace renderer-specific screenshot code. It provides
-the stable selection contract around that code. The host must apply the
-selected route and scenario, render at `capture.size()`, honor
+The host must apply the selected route and scenario, render at
+`capture.size()`, honor
 `capture.frame()`, create the output directory, and save a PNG to
 `capture.path()`.
 
@@ -50,7 +52,8 @@ zero dimensions. `build()` returns environment data only; the process manager
 still owns command construction, working directory, environment installation,
 and spawning.
 
-The repository's GPUI example demonstrates the complete host-owned path:
+From the repository root, run the GPUI example to exercise the complete
+host-owned capture path:
 
 ```sh
 FRAME_CAPTURE_ROUTE=gpui/dashboard \

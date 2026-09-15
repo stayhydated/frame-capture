@@ -1,15 +1,12 @@
 # frame-capture-bevy
 
+[![CI](https://github.com/stayhydated/frame-capture/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/stayhydated/frame-capture/actions/workflows/ci.yml)
+[![Codecov](https://codecov.io/gh/stayhydated/frame-capture/branch/master/graph/badge.svg)](https://codecov.io/gh/stayhydated/frame-capture)
+[![Book](https://img.shields.io/badge/book-online-blue)](https://stayhydated.github.io/frame-capture/book/)
+[![crates.io](https://img.shields.io/crates/v/frame-capture-bevy.svg)](https://crates.io/crates/frame-capture-bevy)
+
 Bevy facade for running the same route interactively or through an offscreen
 PNG capture runtime.
-
-## Add the dependencies
-
-```toml
-[dependencies]
-bevy = "0.19"
-frame-capture-bevy = "0.2"
-```
 
 A Bevy integration follows four steps:
 
@@ -20,7 +17,10 @@ A Bevy integration follows four steps:
 4. Install the selected route with `RoutePlugin`, a session state/resource
    helper, or a registered route installer.
 
+Create the output directory before launching the application:
+
 ```sh
+mkdir -p captures
 FRAME_CAPTURE_ROUTE=dashboard \
 FRAME_CAPTURE_PATH=captures/dashboard.png \
 cargo run -p my-bevy-app
@@ -28,6 +28,3 @@ cargo run -p my-bevy-app
 
 Use `CaptureReady` when capture must wait for asynchronous preparation. Enable
 the `registry` feature when routes are registered as `fn(&mut App)` installers.
-
-- [Bevy guide](https://stayhydated.github.io/frame-capture/book/bevy.html)
-- [API documentation](https://docs.rs/frame-capture-bevy/)

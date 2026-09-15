@@ -1,7 +1,8 @@
 # Read capture sessions
 
 Read one environment-backed session during startup, then use its route in both
-live and capture mode:
+live and capture mode. The rendering functions below stand for the host
+application's existing screenshot pipeline:
 
 ```rust,ignore
 use frame_capture_routes::{CaptureEnv, CaptureRoute as _};
@@ -67,9 +68,9 @@ let session = CaptureEnv::frame_capture()
     .read_session_with_scenario::<UiRoute, UiScenario>()?;
 ```
 
-Apply the selected scenario before rendering. A scenario is state input, not a
-route path, so it cannot contain path separators. Route-only `read_session`
-does not consume `FRAME_CAPTURE_SCENARIO`; use
+Apply the selected scenario before rendering in either live or capture mode.
+Scenario IDs describe application state and cannot contain path separators.
+Route-only `read_session` does not consume `FRAME_CAPTURE_SCENARIO`; use
 `read_session_with_scenario` or `read_session_with_inputs` when the application
 supports scenarios. Bevy's plain `read_bevy_session` rejects a supplied
 scenario to prevent silently ignoring it.
