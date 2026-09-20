@@ -6,6 +6,7 @@ use frame_capture_routes::{
 };
 use gpui_kit::component::{Root, badge::Badge, h_flex, progress::Progress, v_flex};
 use gpui_kit::*;
+#[cfg(feature = "capture")]
 use image::{RgbaImage, imageops::FilterType};
 
 #[derive(Clone, Copy)]
@@ -36,19 +37,30 @@ fn main() -> Result<(), Box<dyn Error>> {
         .unwrap_or_else(|| route.spec().default_size());
 
     if let Some(capture) = session.capture().cloned() {
-        save_native_capture(route, scenario, capture.clone())?;
-        println!(
-            "saved native GPUI capture for frame {} to {}",
-            capture.frame().get(),
-            capture.path().display()
-        );
-        return Ok(());
+        #[cfg(feature = "capture")]
+        {
+            save_native_capture(route, scenario, capture.clone())?;
+            println!(
+                "saved native GPUI capture for frame {} to {}",
+                capture.frame().get(),
+                capture.path().display()
+            );
+            return Ok(());
+        }
+
+        #[cfg(not(feature = "capture"))]
+        {
+            let _ = (route, scenario, capture);
+            return Err(
+                "native GPUI capture requires the `capture` feature of this example".into(),
+            );
+        }
     }
 
     let routes = route_summaries();
     let title = route.spec().title();
 
-    let app = gpui_platform::application();
+    let app = gpui_kit::application();
     app.run(move |cx: &mut App| {
         gpui_kit::init(cx);
         cx.activate(true);
@@ -404,6 +416,7 @@ fn metric(title: &'static str, value: &'static str, color: Rgba) -> impl IntoEle
         )
 }
 
+#[cfg(feature = "capture")]
 fn save_native_capture(
     route: GpuiExampleRoute,
     scenario: Option<GpuiExampleScenario>,
@@ -425,7 +438,7 @@ fn save_native_capture(
     let mut cx = HeadlessAppContext::with_platform(
         Arc::new(gpui_wgpu::CosmicTextSystem::new("Helvetica")),
         Arc::new(()),
-        || gpui_platform::current_headless_renderer(),
+        gpui_kit::platform::current_headless_renderer,
     );
 
     cx.update(|cx| {
@@ -462,22 +475,19 @@ fn save_native_capture(
     Ok(())
 }
 
-fn normalize_capture_screenshot(mut image: RgbaImage, size: PixelSize) -> RgbaImage {
+#[cfg(feature = "capture")]
+fn normalize_capture_screenshot(image: RgbaImage, size: PixelSize) -> RgbaImage {
     if image.width() == size.width() && image.height() == size.height() {
         return image;
     }
 
-    image::imageops::resize(
-        &mut image,
-        size.width(),
-        size.height(),
-        FilterType::Lanczos3,
-    )
+    image::imageops::resize(&image, size.width(), size.height(), FilterType::Lanczos3)
 }
 
 #[cfg(test)]
 mod tests {
     use frame_capture_routes::CaptureEnv;
+    #[cfg(feature = "capture")]
     use image::RgbaImage;
 
     #[test]
@@ -532,6 +542,7 @@ mod tests {
         }
     }
 
+    #[cfg(feature = "capture")]
     #[test]
     fn normalize_capture_screenshot_matches_requested_size() {
         let image = RgbaImage::new(1920, 1080);
