@@ -9,6 +9,9 @@
 
 ## Configure a typed route
 
+The startup fragment below assumes application-owned `DashboardPlugin` and
+`ReviewPlugin` types. Each plugin should spawn its camera and scene in `Startup`.
+
 ```rust,ignore
 use bevy::{
     prelude::*,
@@ -41,9 +44,11 @@ session.add_capture_plugins(
     &mut app,
     DefaultPlugins.set(session.capture_window_plugin(window)),
 );
-app.add_plugins(RoutePlugin::new(route, |route, app: &mut App| match route {
-    UiRoute::Dashboard => app.add_plugins(DashboardPlugin),
-    UiRoute::Review => app.add_plugins(ReviewPlugin),
+app.add_plugins(RoutePlugin::new(route, |route, app: &mut App| {
+    match route {
+        UiRoute::Dashboard => app.add_plugins(DashboardPlugin),
+        UiRoute::Review => app.add_plugins(ReviewPlugin),
+    };
 }));
 app.run();
 ```
@@ -69,21 +74,24 @@ helpers.
 
 ## Wait for readiness
 
+Use an application-owned `assets_loaded` run condition that returns true once
+asynchronous preparation is complete:
+
 ```rust,ignore
-use frame_capture_bevy::{CaptureReady, CaptureWarmupPlugin};
+use frame_capture_bevy::CaptureReady;
 
 app.insert_resource(CaptureReady::pending())
-    .add_systems(Update, mark_loaded);
+    .add_systems(Update, mark_loaded.run_if(assets_loaded));
 
 fn mark_loaded(mut ready: ResMut<CaptureReady>) {
     ready.mark_ready();
 }
-
-app.add_plugins(CaptureWarmupPlugin::frames(30));
 ```
 
-Use app-owned readiness for asynchronous work and warmup frames for a fixed
-frame-count delay.
+When a fixed delay is sufficient, use
+`app.add_plugins(frame_capture_bevy::CaptureWarmupPlugin::frames(30))` instead. The warmup plugin
+writes `CaptureReady` itself. For both asynchronous work and a minimum frame
+count, keep readiness app-owned and set the capture frame gate separately.
 
 ## Install a registered route
 

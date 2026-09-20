@@ -3616,7 +3616,7 @@ dependencies = [
 
 [[package]]
 name = "frame-capture"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "bon",
  "derive_more",
@@ -3633,7 +3633,7 @@ dependencies = [
 
 [[package]]
 name = "frame-capture-bevy"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "bevy",
  "frame-capture",
@@ -3645,7 +3645,7 @@ dependencies = [
 
 [[package]]
 name = "frame-capture-example-bevy"
-version = "0.1.0"
+version = "0.2.1"
 dependencies = [
  "bevy",
  "frame-capture-bevy",
@@ -3653,7 +3653,7 @@ dependencies = [
 
 [[package]]
 name = "frame-capture-macros"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "darling 0.24.1",
  "frame-capture-toml",
@@ -3666,7 +3666,7 @@ dependencies = [
 
 [[package]]
 name = "frame-capture-mcp"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "frame-capture",
  "frame-capture-routes",
@@ -3677,7 +3677,7 @@ dependencies = [
 
 [[package]]
 name = "frame-capture-routes"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "frame-capture",
  "frame-capture-macros",
@@ -3687,7 +3687,7 @@ dependencies = [
 
 [[package]]
 name = "frame-capture-routes-bevy"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "bevy_app",
  "frame-capture",
@@ -3698,7 +3698,7 @@ dependencies = [
 
 [[package]]
 name = "frame-capture-toml"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "serde",
  "thiserror 2.0.20",
@@ -8086,7 +8086,7 @@ checksum = "323f4da9523e9a669e1eaf9c6e763892769b1d38c623913647bfdc1532fe4549"
 
 [[package]]
 name = "web"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "dioxus",
  "stayhydated-dioxus",
@@ -8924,7 +8924,7 @@ checksum = "b9cc00251562a284751c9973bace760d86c0276c471b4be569fe6b068ee97a56"
 
 [[package]]
 name = "xtask"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "anyhow",
  "clap",

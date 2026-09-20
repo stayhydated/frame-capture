@@ -1,6 +1,6 @@
 [package]
 name = "frame-capture-bevy"
-version = "0.2.0"
+version.workspace = true
 description = "Bevy facade for frame-capture offscreen screenshots and route plugins."
 edition.workspace = true
 license.workspace = true

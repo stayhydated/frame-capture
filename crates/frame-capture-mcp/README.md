@@ -1,14 +1,12 @@
 # frame-capture-mcp
 
+[![Codecov: frame-capture-mcp][codecov-badge]][codecov]
+[![crates.io: frame-capture-mcp][crate-badge]][crate]
+
 Read-only MCP servers for discovering capture route IDs, titles, and default
 pixel sizes before a client launches an application.
 
-```toml
-[dependencies]
-frame-capture = "0.2"
-frame-capture-mcp = "0.2"
-tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
-```
+## Overview
 
 Use `serve_capture_routes_stdio::<Route>()` for an enum catalog or
 `serve_registered_capture_routes_stdio()` for registered routes. The servers
@@ -20,5 +18,7 @@ The servers remain available across requests until EOF, cancellation, or
 another explicit host shutdown signal. A host that wants one request terminates
 explicitly after receiving its result.
 
-- [MCP guide](https://stayhydated.github.io/frame-capture/book/mcp.html)
-- [API documentation](https://docs.rs/frame-capture-mcp/)
+[codecov-badge]: https://codecov.io/gh/stayhydated/frame-capture/branch/master/graph/badge.svg?component=frame-capture-mcp
+[codecov]: https://codecov.io/gh/stayhydated/frame-capture
+[crate-badge]: https://img.shields.io/crates/v/frame-capture-mcp.svg?label=frame-capture-mcp
+[crate]: https://crates.io/crates/frame-capture-mcp

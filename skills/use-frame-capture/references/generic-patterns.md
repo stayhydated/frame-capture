@@ -66,8 +66,9 @@ let session = CaptureEnv::frame_capture()
 session.install();
 ```
 
-The macro derives `InstallDashboardRoute` from `install_dashboard`. Set
-`key = MyRouteKey` when an explicit generated key is clearer.
+The macro derives `InstallDashboardRoute` from `install_dashboard`. This key
+selects the default; `FRAME_CAPTURE_ROUTE` can select any route in the same
+registry. Set `key = MyRouteKey` for an explicit key name.
 
 ## Build launch environment data
 
@@ -79,10 +80,13 @@ let launch = frame_capture_routes::CaptureLaunchEnv::builder()
     .size(1280, 720)?
     .build();
 
-command.envs(launch.env_map_lossy());
+command.envs(launch.vars().into_iter().map(|var| var.into_pair()));
 ```
 
-The builder validates protocol values but does not create or launch a process.
+Here, `command` is the caller's `std::process::Command`. `vars()` preserves
+OS-native path values. Use `env_map_lossy()` for JSON-oriented tools that need
+strings. The builder produces environment data; the caller creates and launches
+the process.
 
 ## Expose route metadata
 

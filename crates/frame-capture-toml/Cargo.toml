@@ -1,6 +1,6 @@
 [package]
 name = "frame-capture-toml"
-version = "0.2.0"
+version.workspace = true
 description = "TOML parsing helpers for shared frame-capture defaults."
 edition.workspace = true
 license.workspace = true
