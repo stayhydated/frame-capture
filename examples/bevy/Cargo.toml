@@ -1,6 +1,6 @@
 [package]
 name = "frame-capture-example-bevy"
-version = "0.1.0"
+version.workspace = true
 description = "Bevy screenshot runtime example for frame-capture."
 edition.workspace = true
 license.workspace = true

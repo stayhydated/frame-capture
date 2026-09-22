@@ -22,7 +22,7 @@ use rmcp::{
     },
     model::{
         CacheScope, CallToolRequestParams, CallToolResponse, Implementation, ListToolsResult,
-        MetaObject, PaginatedRequestParams, ProtocolVersion, ServerCapabilities, ServerInfo,
+        MetaObject, PaginatedRequestParams, ProtocolVersion, ServerCapabilities, ServerConfig,
     },
     schemars,
     service::RequestContext,
@@ -161,8 +161,8 @@ where
         ))
     }
 
-    fn get_info(&self) -> ServerInfo {
-        ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+    fn get_info(&self) -> ServerConfig {
+        ServerConfig::new(ServerCapabilities::builder().enable_tools().build())
             .with_protocol_version(ProtocolVersion::V_2026_07_28)
             .with_server_info(Implementation::new(
                 "frame-capture",
@@ -199,8 +199,8 @@ impl ServerHandler for RegisteredCaptureRoutesServer {
         ))
     }
 
-    fn get_info(&self) -> ServerInfo {
-        ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+    fn get_info(&self) -> ServerConfig {
+        ServerConfig::new(ServerCapabilities::builder().enable_tools().build())
             .with_protocol_version(ProtocolVersion::V_2026_07_28)
             .with_server_info(Implementation::new(
                 "frame-capture-registered-routes",

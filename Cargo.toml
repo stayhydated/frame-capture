@@ -19,7 +19,7 @@ edition = "2024"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/stayhydated/frame-capture"
 rust-version = "1.98"
-version = "0.2.0"
+version = "0.2.1"
 
 [workspace.dependencies]
 anyhow = "1.0"
@@ -35,13 +35,13 @@ derive_more = { default-features = false, features = [
   "from",
 ], version = "2.1" }
 dioxus = { default-features = false, version = "0.7" }
-frame-capture = { default-features = false, path = "crates/frame-capture", version = "0.2.0" }
-frame-capture-bevy = { path = "crates/frame-capture-bevy", version = "0.2.0" }
-frame-capture-macros = { path = "crates/frame-capture-macros", version = "0.2.0" }
-frame-capture-mcp = { path = "crates/frame-capture-mcp", version = "0.2.0" }
-frame-capture-routes = { default-features = false, path = "crates/frame-capture-routes", version = "0.2.0" }
-frame-capture-routes-bevy = { path = "crates/frame-capture-routes-bevy", version = "0.2.0" }
-frame-capture-toml = { path = "crates/frame-capture-toml", version = "0.2.0" }
+frame-capture = { default-features = false, path = "crates/frame-capture", version = "0.2.1" }
+frame-capture-bevy = { path = "crates/frame-capture-bevy", version = "0.2.1" }
+frame-capture-macros = { path = "crates/frame-capture-macros", version = "0.2.1" }
+frame-capture-mcp = { path = "crates/frame-capture-mcp", version = "0.2.1" }
+frame-capture-routes = { default-features = false, path = "crates/frame-capture-routes", version = "0.2.1" }
+frame-capture-routes-bevy = { path = "crates/frame-capture-routes-bevy", version = "0.2.1" }
+frame-capture-toml = { path = "crates/frame-capture-toml", version = "0.2.1" }
 fs-err = "3.3"
 heck = "0.5"
 image = { default-features = false, features = [ "png" ], version = "0.25" }
@@ -53,14 +53,14 @@ rmcp = { default-features = false, features = [
   "macros",
   "server",
   "transport-io",
-], version = "3.3" }
+], version = "3.4" }
 schemars = "1.2"
 serde = { features = [ "derive" ], version = "1.0" }
 serde_json = "1.0"
 serde_with = { default-features = false, features = [ "macros" ], version = "3.23" }
-stayhydated-dioxus = { git = "https://github.com/stayhydated/shared", rev = "809946144fe13b04a57ba17677c4c699143f4786" }
-stayhydated-site = { git = "https://github.com/stayhydated/shared", rev = "809946144fe13b04a57ba17677c4c699143f4786" }
-stayhydated-xtask = { git = "https://github.com/stayhydated/shared", rev = "809946144fe13b04a57ba17677c4c699143f4786" }
+stayhydated-dioxus = { git = "https://github.com/stayhydated/shared", rev = "14df45a56f8fa847f816cf297c7b36dffb77ea1e" }
+stayhydated-site = { git = "https://github.com/stayhydated/shared", rev = "14df45a56f8fa847f816cf297c7b36dffb77ea1e" }
+stayhydated-xtask = { git = "https://github.com/stayhydated/shared", rev = "14df45a56f8fa847f816cf297c7b36dffb77ea1e" }
 syn = "3.0"
 thiserror = "2.0"
 toml = "1.1"

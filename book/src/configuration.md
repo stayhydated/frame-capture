@@ -1,5 +1,8 @@
 # Configure sizes and output paths
 
+Set route sizes at compile time and override them per capture when needed.
+Use stable route IDs to derive predictable PNG locations.
+
 ## Configure a shared default size
 
 When a route or enum does not declare both dimensions, the route macro reads a
@@ -28,7 +31,8 @@ error if it cannot resolve both dimensions.
 
 ## Build deterministic output paths
 
-Use `CaptureOutputPath` for deterministic route-local PNG locations:
+Use `CaptureOutputPath` for deterministic route-local PNG locations. This
+example uses the `UiRoute` catalog from [typed routes](routes.md):
 
 ```rust,ignore
 use frame_capture_routes::{CaptureOutputPath, CaptureOutputStem};

@@ -1,6 +1,6 @@
 [package]
 name = "frame-capture-routes-bevy"
-version = "0.2.0"
+version.workspace = true
 description = "Bevy App route-registration facade for frame-capture."
 edition.workspace = true
 license.workspace = true

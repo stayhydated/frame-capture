@@ -1,6 +1,6 @@
 [package]
 name = "frame-capture-macros"
-version = "0.2.0"
+version.workspace = true
 description = "Proc macros for frame-capture route, scenario, and registered-route declarations."
 edition.workspace = true
 license.workspace = true

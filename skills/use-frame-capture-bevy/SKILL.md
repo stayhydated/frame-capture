@@ -1,11 +1,11 @@
 ---
 name: use-frame-capture-bevy
-description: Integrate, review, or refactor frame-capture-bevy in Bevy applications. Use when Codex needs to wire live and offscreen capture modes, CaptureRouteBevy or CaptureScenarioBevy, BevyCaptureSession, RoutePlugin, capture_window_plugin, CaptureReady, CaptureWarmupPlugin, Bevy state or resource mapping, registered fn(&mut App) routes, FRAME_CAPTURE_* inputs, frame gates, scenarios, or deterministic PNG output. Use the generic frame-capture skill when the host owns a non-Bevy screenshot pipeline.
+description: Integrate, review, or refactor frame-capture-bevy live and offscreen capture in Bevy applications, including typed inputs, state/resource mapping, readiness, and registered route installers. Use when frame-capture-bevy owns screenshot output; use the generic skill for a host-owned renderer.
 ---
 
 # Use frame-capture Bevy
 
-## Follow the integration workflow
+## Configure the application
 
 1. Inspect the existing Bevy plugin, route, state, camera, and startup setup.
 2. Define stable routes with `CaptureRouteBevy` and positive default sizes.
@@ -21,11 +21,12 @@ description: Integrate, review, or refactor frame-capture-bevy in Bevy applicati
 7. Spawn capture cameras and scene content by `Startup`, before the offscreen
    target is assigned in `PostStartup`.
 8. Use `CaptureReady::pending()` for asynchronous preparation and mark it ready
-   from a system. Use `CaptureWarmupPlugin::frames(n)` for a fixed delay.
+   from a system. Use `CaptureWarmupPlugin::frames(n)` when a fixed delay is
+   sufficient; both mechanisms write the same readiness resource.
 9. Run the app normally. Capture mode saves the requested PNG and exits through
    `AppExit`.
 
-## Map selected inputs deliberately
+## Map selected inputs
 
 - Use `add_route_state` when the route enum itself drives Bevy state schedules.
 - Use `add_scenario_state` when the scenario enum is a Bevy state and live mode
@@ -41,7 +42,7 @@ installers. Validate the registry, resolve the session, configure the capture
 window and runtime from `session.capture()`, then call
 `session.install(&mut app)` before `app.run()`.
 
-## Preserve these contracts
+## Capture contracts
 
 - Live mode keeps the supplied Bevy plugin group's normal behavior.
 - Capture mode disables `WinitPlugin`, removes the primary window, runs the
@@ -52,7 +53,7 @@ window and runtime from `session.capture()`, then call
 - MCP route catalogs remain read-only; the Bevy application owns capture
   execution.
 
-## Load detailed patterns
+## Patterns
 
 Read [Bevy patterns](references/bevy-patterns.md) for typed setup, state and
 resource mapping, readiness, and registered-route wiring. Prefer the current

@@ -7,7 +7,10 @@ scene construction and state.
 ## Configure the application
 
 Read the session before constructing `App`, derive the window resolution from
-it, and add Bevy plugins through the session:
+it, and add Bevy plugins through the session. This startup fragment uses the
+`UiRoute` catalog from [typed routes](routes.md), derived with
+`CaptureRouteBevy`, and application-owned `DashboardPlugin` and `ReviewPlugin`
+types:
 
 ```rust,ignore
 use bevy::{
@@ -37,7 +40,7 @@ app.add_plugins(RoutePlugin::new(route, |route, app: &mut App| {
     match route {
         UiRoute::Dashboard => app.add_plugins(DashboardPlugin),
         UiRoute::Review => app.add_plugins(ReviewPlugin),
-    }
+    };
 }));
 app.run();
 ```
@@ -83,20 +86,25 @@ size, and both resolution helpers set the scale-factor override to `1.0`.
 
 `CaptureReady` defaults to ready. Insert `CaptureReady::pending()` only when
 the capture must wait for asynchronous data or assets, then mark it ready from
-a system:
+a system. Here, `assets_loaded` is an application-owned run condition that
+returns true once preparation is complete:
 
 ```rust,ignore
 use frame_capture_bevy::CaptureReady;
 
-app.insert_resource(CaptureReady::pending());
+app.insert_resource(CaptureReady::pending())
+    .add_systems(Update, mark_loaded.run_if(assets_loaded));
 
 fn mark_loaded(mut ready: ResMut<CaptureReady>) {
     ready.mark_ready();
 }
 ```
 
-For a fixed delay, add `CaptureWarmupPlugin::frames(n)`. Readiness and the frame
-gate are both required before the screenshot request runs.
+When a fixed delay is sufficient, use `CaptureWarmupPlugin::frames(n)` instead
+of an application-owned readiness system. The warmup plugin writes
+`CaptureReady` itself. For asynchronous preparation plus a minimum frame count,
+keep readiness app-owned and set `FRAME_CAPTURE_FRAME`. Capture waits until
+both readiness and the frame gate are satisfied.
 
 ## Use registered routes
 

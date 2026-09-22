@@ -1,7 +1,12 @@
 # frame-capture-toml
 
+[![Codecov: frame-capture-toml][codecov-badge]][codecov]
+[![crates.io: frame-capture-toml][crate-badge]][crate]
+
 Parser for the shared `frame-capture.toml` default-size format used by the route
 macros.
+
+## Example
 
 ```toml
 [default_size]
@@ -14,5 +19,7 @@ normally configures this file and lets its selected facade's route macro read
 it. Depend on `frame-capture-toml` directly only when parsing the same format in
 a custom tool or facade.
 
-- [Configuration guide](https://stayhydated.github.io/frame-capture/book/configuration.html)
-- [API documentation](https://docs.rs/frame-capture-toml/)
+[codecov-badge]: https://codecov.io/gh/stayhydated/frame-capture/branch/master/graph/badge.svg?component=frame-capture-toml
+[codecov]: https://codecov.io/gh/stayhydated/frame-capture
+[crate-badge]: https://img.shields.io/crates/v/frame-capture-toml.svg?label=frame-capture-toml
+[crate]: https://crates.io/crates/frame-capture-toml
