@@ -1,6 +1,6 @@
 [package]
 name = "frame-capture-example-gpui"
-version = "0.2.1"
+version = "0.2.2"
 description = "GPUI enum route-only integration example for frame-capture."
 edition = "2024"
 license = "MIT OR Apache-2.0"
@@ -9,16 +9,16 @@ rust-version = "1.98"
 
 [features]
 default = ["capture"]
-# Native headless rendering needs a GPUI release that ships the platform
-# headless renderer. Upstream gpui-pre does not expose one yet, so keep the
-# capture path behind a feature until the pinned release provides it.
+# The `capture` path uses GPUI's platform headless renderer when the pinned
+# gpui-pre release provides one (Metal on macOS, Wgpu on Linux; Windows
+# returns none and stays on the real-window application path).
 capture = ["dep:gpui_wgpu", "gpui-kit/test-support"]
 
 [dependencies]
-gpui-kit = "0.6.4"
+gpui-kit = "0.7.0"
 gpui_wgpu = { optional = true, package = "gpui-pre-wgpu", features = [
   "font-kit",
-], version = "=0.3.5" }
+], version = "=0.3.7" }
 image = { default-features = false, features = ["png"], version = "0.25.10" }
 
 frame-capture-routes = { default-features = false, features = [
