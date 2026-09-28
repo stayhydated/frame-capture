@@ -40,8 +40,8 @@ example-captures:
 example-gpui:
     cargo run --manifest-path examples/gpui/Cargo.toml
 
-# Native capture is gated by the `capture` feature (on by default) and needs a
-# GPUI release that ships the platform headless renderer.
+# Native capture is gated by the `capture` feature (on by default) and runs on
+# the platform headless renderer: Metal on macOS, Wgpu on Linux.
 example-gpui-captures:
     FRAME_CAPTURE_ROUTE=gpui/dashboard FRAME_CAPTURE_PATH=examples/gpui/captures/gpui/dashboard/current.png cargo run --manifest-path examples/gpui/Cargo.toml
     FRAME_CAPTURE_ROUTE=gpui/review FRAME_CAPTURE_PATH=examples/gpui/captures/gpui/review/current.png cargo run --manifest-path examples/gpui/Cargo.toml
