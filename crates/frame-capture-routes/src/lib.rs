@@ -321,7 +321,7 @@ pub fn registered_route_for<R>(id: &CaptureRouteId) -> Result<&'static R, Regist
 where
     R: CaptureRouteRegistration + inventory::Collect,
 {
-    let mut routes = registered_routes_for::<R>()
+    let mut routes = inventory::iter::<R>
         .into_iter()
         .filter(|route| route.spec().id() == id.as_str());
     let Some(route) = routes.next() else {
