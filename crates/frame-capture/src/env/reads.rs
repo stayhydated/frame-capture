@@ -236,15 +236,14 @@ impl CaptureEnv {
             return Ok(default);
         };
 
-        let frame = value
-            .parse::<u32>()
-            .map_err(|_| CaptureEnvError::InvalidInteger {
+        value.parse().map_err(|error| match error {
+            ParseCaptureFrameError::Invalid { value } => CaptureEnvError::InvalidInteger {
                 var: var.to_string(),
                 value,
-            })?;
-
-        CaptureFrame::try_new(frame).ok_or_else(|| CaptureEnvError::ZeroDimension {
-            var: var.to_string(),
+            },
+            ParseCaptureFrameError::Zero => CaptureEnvError::ZeroDimension {
+                var: var.to_string(),
+            },
         })
     }
 
