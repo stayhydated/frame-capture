@@ -1,7 +1,8 @@
 # Working in frame-capture
 
 Use `just --list` for the local command index. Choose the owning surface below
-before changing a capture contract.
+before changing a capture contract. Use the pinned toolchain in
+`rust-toolchain.toml` for local validation.
 
 ## Where to work
 
@@ -31,7 +32,8 @@ workspace. Validate it with `--manifest-path examples/gpui/Cargo.toml`.
   live in `crates/frame-capture/tests/ui`; update `.stderr` files only for
   intentional diagnostic changes. Registered-route tests live in the owning
   facade's `tests` directory and cover keys, installer signatures, and duplicate
-  IDs.
+  IDs. Preserve duplicate-ID errors for individual lookups and sorted catalog
+  output when changing registry traversal.
 - Keep `frame-capture.toml` examples aligned with macro size precedence and
   parent-directory discovery.
 - For Bevy runtime changes, preserve live plugin behavior and capture-mode
