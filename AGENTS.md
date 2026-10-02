@@ -52,6 +52,11 @@ workspace. Validate it with `--manifest-path examples/gpui/Cargo.toml`.
 - For Rust changes, use the narrowest package-specific `cargo check` or
   `cargo test` that covers the change. `just check`, `just clippy`, and
   `just test` cover the workspace with all features and targets.
+- Target-neutral property tests live in `crates/frame-capture/src/size/properties.rs`
+  and `src/env/tests/properties.rs` in that crate. Run them with
+  `cargo test -p frame-capture --lib --all-features --locked`.
+  Keep dimension strategies positive, gate sequences bounded, and rounding and
+  latch oracles independent of the implementation; preserve minimized regressions.
 - For Markdown, run `rumdl check` on the changed files. `just fmt` also formats
   Rust and TOML, so use it when those surfaces need formatting.
 - For rustdocs, use `just test-docs` (builds documentation and opens it).

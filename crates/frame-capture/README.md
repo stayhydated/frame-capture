@@ -15,6 +15,9 @@ derives. The runtime surface provides typed route and scenario IDs,
 `CaptureEnv`, capture sessions, pixel sizes, frame gates, launch environment
 data, and validated PNG output paths.
 
+Pixel sizes require positive dimensions. Long-edge resizing rounds the shorter
+edge to the nearest pixel and keeps each dimension at least one pixel long.
+
 `FRAME_CAPTURE_PATH` selects capture mode. A custom facade is responsible for
 rendering the selected route at the requested size and frame and saving the PNG
 to the requested path.
