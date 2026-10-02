@@ -171,6 +171,9 @@ fn scaled_dimension(long_edge: u32, dimension: u32, base: u32) -> u32 {
 }
 
 #[cfg(test)]
+mod properties;
+
+#[cfg(test)]
 mod tests {
     use super::*;
 

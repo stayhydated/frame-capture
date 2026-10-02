@@ -1,7 +1,8 @@
 # Working in frame-capture
 
 Use `just --list` for the local command index. Choose the owning surface below
-before changing a capture contract.
+before changing a capture contract. Use the pinned toolchain in
+`rust-toolchain.toml` for local validation.
 
 ## Where to work
 
@@ -31,7 +32,8 @@ workspace. Validate it with `--manifest-path examples/gpui/Cargo.toml`.
   live in `crates/frame-capture/tests/ui`; update `.stderr` files only for
   intentional diagnostic changes. Registered-route tests live in the owning
   facade's `tests` directory and cover keys, installer signatures, and duplicate
-  IDs.
+  IDs. Preserve duplicate-ID errors for individual lookups and sorted catalog
+  output when changing registry traversal.
 - Keep `frame-capture.toml` examples aligned with macro size precedence and
   parent-directory discovery.
 - For Bevy runtime changes, preserve live plugin behavior and capture-mode
@@ -50,6 +52,11 @@ workspace. Validate it with `--manifest-path examples/gpui/Cargo.toml`.
 - For Rust changes, use the narrowest package-specific `cargo check` or
   `cargo test` that covers the change. `just check`, `just clippy`, and
   `just test` cover the workspace with all features and targets.
+- Target-neutral property tests live in `crates/frame-capture/src/size/properties.rs`
+  and `src/env/tests/properties.rs` in that crate. Run them with
+  `cargo test -p frame-capture --lib --all-features --locked`.
+  Keep dimension strategies positive, gate sequences bounded, and rounding and
+  latch oracles independent of the implementation; preserve minimized regressions.
 - For Markdown, run `rumdl check` on the changed files. `just fmt` also formats
   Rust and TOML, so use it when those surfaces need formatting.
 - For rustdocs, use `just test-docs` (builds documentation and opens it).

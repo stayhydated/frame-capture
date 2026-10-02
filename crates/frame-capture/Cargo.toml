@@ -25,6 +25,7 @@ thiserror.workspace = true
 
 [dev-dependencies]
 frame-capture-macros.workspace = true
+proptest = { default-features = false, features = [ "std" ], version = "1.11" }
 serde_json.workspace = true
 trybuild = "1.0"
 
