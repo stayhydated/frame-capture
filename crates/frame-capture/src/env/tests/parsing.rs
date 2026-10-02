@@ -1,4 +1,4 @@
-use std::num::NonZeroU32;
+use std::{assert_matches, num::NonZeroU32};
 
 use super::{super::*, support::*};
 
@@ -12,10 +12,10 @@ fn capture_frames_cover_nonzero_parse_display_and_serde_contracts() {
     assert_eq!(NonZeroU32::from(frame), nonzero);
     assert_eq!(frame.to_string(), "3");
     assert_eq!("3".parse::<CaptureFrame>().unwrap(), frame);
-    assert!(matches!(
+    assert_matches!(
         "three".parse::<CaptureFrame>(),
         Err(ParseCaptureFrameError::Invalid { .. })
-    ));
+    );
     assert_eq!(
         "0".parse::<CaptureFrame>(),
         Err(ParseCaptureFrameError::Zero)
@@ -23,6 +23,28 @@ fn capture_frames_cover_nonzero_parse_display_and_serde_contracts() {
     assert_eq!(serde_json::to_string(&frame).unwrap(), "3");
     assert!(serde_json::from_str::<CaptureFrame>("0").is_err());
     assert!(std::panic::catch_unwind(|| CaptureFrame::new(0)).is_err());
+}
+
+#[test]
+fn capture_frame_parser_preserves_integer_error_categories() {
+    for value in ["1", "+1", "4294967295"] {
+        assert_eq!(
+            value.parse::<CaptureFrame>().unwrap().get(),
+            value.parse::<u32>().unwrap(),
+        );
+    }
+    for value in ["0", "+0", "000"] {
+        assert_eq!(
+            value.parse::<CaptureFrame>(),
+            Err(ParseCaptureFrameError::Zero)
+        );
+    }
+    for value in ["", "-1", " 1", "1 ", "4294967296"] {
+        assert_matches!(
+            value.parse::<CaptureFrame>(),
+            Err(ParseCaptureFrameError::Invalid { value: actual }) if actual == value,
+        );
+    }
 }
 
 #[test]
@@ -86,15 +108,15 @@ fn capture_env_reads_route_and_scenario_values_and_errors() {
     );
 
     unsafe { std::env::set_var(env.route_var(), "missing") };
-    assert!(matches!(
+    assert_matches!(
         env.read_route::<Route>(),
         Err(CaptureEnvError::InvalidRoute { .. })
-    ));
+    );
     unsafe { std::env::set_var(env.route_var(), "../missing") };
-    assert!(matches!(
+    assert_matches!(
         env.read_route_id_or(&default),
         Err(CaptureEnvError::InvalidRouteId { .. })
-    ));
+    );
 
     unsafe { std::env::set_var(env.scenario_var(), "loaded") };
     assert_eq!(
@@ -103,15 +125,15 @@ fn capture_env_reads_route_and_scenario_values_and_errors() {
     );
     assert_eq!(env.read_scenario_id().unwrap().unwrap().as_str(), "loaded");
     unsafe { std::env::set_var(env.scenario_var(), "missing") };
-    assert!(matches!(
+    assert_matches!(
         env.read_scenario::<Scenario>(),
         Err(CaptureEnvError::InvalidScenario { .. })
-    ));
+    );
     unsafe { std::env::set_var(env.scenario_var(), "states/loaded") };
-    assert!(matches!(
+    assert_matches!(
         env.read_scenario_id(),
         Err(CaptureEnvError::InvalidStateId { .. })
-    ));
+    );
     clear(&env);
 }
 
@@ -123,9 +145,9 @@ fn capture_env_rejects_non_unicode_string_values() {
     let env = env("FRAME_CAPTURE_ENV_UNICODE_TEST");
     clear(&env);
     unsafe { std::env::set_var(env.route_var(), OsString::from_vec(vec![0xff])) };
-    assert!(matches!(
+    assert_matches!(
         env.read_route::<Route>(),
         Err(CaptureEnvError::NotUnicode { .. })
-    ));
+    );
     clear(&env);
 }

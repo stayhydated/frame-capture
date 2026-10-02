@@ -57,13 +57,15 @@ impl FromStr for CaptureFrame {
     type Err = ParseCaptureFrameError;
 
     fn from_str(value: &str) -> Result<Self, Self::Err> {
-        let frame = value
-            .parse::<u32>()
-            .map_err(|_| ParseCaptureFrameError::Invalid {
-                value: value.to_owned(),
-            })?;
-
-        Self::try_new(frame).ok_or(ParseCaptureFrameError::Zero)
+        value
+            .parse::<NonZeroU32>()
+            .map(Self::from_nonzero)
+            .map_err(|error| match error.kind() {
+                std::num::IntErrorKind::Zero => ParseCaptureFrameError::Zero,
+                _ => ParseCaptureFrameError::Invalid {
+                    value: value.to_owned(),
+                },
+            })
     }
 }
 

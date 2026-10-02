@@ -5,21 +5,21 @@ description = "GPUI enum route-only integration example for frame-capture."
 edition = "2024"
 license = "MIT OR Apache-2.0"
 publish = false
-rust-version = "1.98"
+rust-version = "1.99"
 
 [features]
-default = ["capture"]
+default = [ "capture" ]
 # The `capture` path uses GPUI's platform headless renderer when the pinned
 # gpui-pre release provides one (Metal on macOS, Wgpu on Linux; Windows
 # returns none and stays on the real-window application path).
-capture = ["dep:gpui_wgpu", "gpui-kit/test-support"]
+capture = [ "dep:gpui_wgpu", "gpui-kit/test-support" ]
 
 [dependencies]
 gpui-kit = "0.7.0"
-gpui_wgpu = { optional = true, package = "gpui-pre-wgpu", features = [
+gpui_wgpu = { features = [
   "font-kit",
-], version = "=0.3.7" }
-image = { default-features = false, features = ["png"], version = "0.25.10" }
+], optional = true, package = "gpui-pre-wgpu", version = "=0.3.7" }
+image = { default-features = false, features = [ "png" ], version = "0.25.10" }
 
 frame-capture-routes = { default-features = false, features = [
   "macros",

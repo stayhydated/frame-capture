@@ -15,6 +15,9 @@
 deterministic PNG capture, with one catalog shared by interactive launches,
 capture runs, and tool-facing discovery.
 
+The workspace requires Rust 1.99 or newer and uses edition 2024. Local validation
+and CI use the pinned Rust 1.99.0 toolchain.
+
 ## Crates
 
 | Crate | Purpose | Source |
