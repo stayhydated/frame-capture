@@ -16,6 +16,7 @@ fmt-check:
     taplo fmt --check
     rumdl check .
     cargo sort-derives --check
+    typos
 
 clippy:
     cargo clippy --workspace --all-features --all-targets --locked -- -D warnings
