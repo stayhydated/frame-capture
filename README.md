@@ -15,23 +15,29 @@
 deterministic PNG capture, with one catalog shared by interactive launches,
 capture runs, and tool-facing discovery.
 
-The workspace requires Rust 1.99 or newer and uses edition 2024.
+Requires Rust 1.99 or newer for all workspace packages. The Bevy integration
+targets Bevy 0.19; host-rendered integrations choose their own rendering backend.
+
+Use [`frame-capture-bevy`][bevy-readme] for the supplied screenshot runtime or
+[`frame-capture-routes`][routes-readme] for an existing screenshot pipeline.
+Custom facades and launch tools can use [`frame-capture`][core-readme] directly.
 
 ## Crates
 
-| Crate | Purpose | Source |
-| --- | --- | --- |
-| `frame-capture` | Target-neutral routes, sessions, environment parsing, sizes, frame gates, and PNG paths | [README](crates/frame-capture/README.md) |
-| `frame-capture-bevy` | Bevy plugins and an offscreen PNG capture runtime | [README](crates/frame-capture-bevy/README.md) |
-| `frame-capture-macros` | Route, scenario, and registered-route proc macros used by the facades | [README](crates/frame-capture-macros/README.md) |
-| `frame-capture-mcp` | Read-only MCP route catalog servers | [README](crates/frame-capture-mcp/README.md) |
-| `frame-capture-routes` | Route sessions and registration for host-owned renderers | [README](crates/frame-capture-routes/README.md) |
-| `frame-capture-routes-bevy` | Bevy `fn(&mut App)` route registration for host-owned capture runtimes | [README](crates/frame-capture-routes-bevy/README.md) |
-| `frame-capture-toml` | Shared default-size configuration parsing for macros and tools | [README](crates/frame-capture-toml/README.md) |
+| Crate | Purpose |
+| --- | --- |
+| [`frame-capture`][core-readme] | Target-neutral routes, sessions, launch inputs, sizes, frame gates, and PNG paths for custom facades and tools. |
+| [`frame-capture-bevy`][bevy-readme] | Bevy plugins and an offscreen PNG capture runtime for applications. |
+| [`frame-capture-macros`][macros-readme] | Route, scenario, and registered-route proc macros, normally reached through facade reexports. |
+| [`frame-capture-mcp`][mcp-readme] | Read-only MCP route catalog servers for launch tools. |
+| [`frame-capture-routes`][routes-readme] | Route sessions and registration for host-owned renderers. |
+| [`frame-capture-routes-bevy`][routes-bevy-readme] | Bevy `fn(&mut App)` route registration for host-owned capture runtimes. |
+| [`frame-capture-toml`][toml-readme] | Shared default-size parsing for macros and custom tools. |
 
 ## Example
 
-From the repository root, capture the Bevy example dashboard:
+From the repository root, capture the [maintained Bevy example][bevy-example]
+dashboard with a working graphics backend:
 
 ```sh
 FRAME_CAPTURE_ROUTE=bevy/dashboard \
@@ -66,3 +72,11 @@ PNG, and exits.
 [frame-capture-routes-bevy-crate]: https://crates.io/crates/frame-capture-routes-bevy
 [frame-capture-toml-badge]: https://img.shields.io/crates/v/frame-capture-toml.svg?label=frame-capture-toml
 [frame-capture-toml-crate]: https://crates.io/crates/frame-capture-toml
+[bevy-example]: examples/bevy/src/app.rs
+[core-readme]: crates/frame-capture/README.md
+[bevy-readme]: crates/frame-capture-bevy/README.md
+[macros-readme]: crates/frame-capture-macros/README.md
+[mcp-readme]: crates/frame-capture-mcp/README.md
+[routes-readme]: crates/frame-capture-routes/README.md
+[routes-bevy-readme]: crates/frame-capture-routes-bevy/README.md
+[toml-readme]: crates/frame-capture-toml/README.md
