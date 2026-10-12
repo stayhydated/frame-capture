@@ -10,12 +10,9 @@ and other host-rendered applications.
 Depend on this facade directly for host-owned screenshot pipelines. Use
 [`frame-capture-bevy`][bevy] when the supplied Bevy runtime should save the PNG.
 
-Requires Rust 1.99 or newer. The host supplies rendering and PNG output.
+Requires Rust 1.99 or newer.
 
 ## Overview
-
-Define routes with `CaptureRouteRoutes`, then read one session during startup
-with `CaptureEnv::frame_capture().read_session::<Route>()?`.
 
 Use the selected route in live and capture modes. In capture mode, honor
 `capture.size()` and `capture.frame()`, create the output directory, and save a
@@ -57,12 +54,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 ```
 
 The session selects `dashboard` in both modes. This example reports the capture
-request; the host must honor its size and frame and save the PNG. The
-[facade tests][tests] cover typed and registered sessions.
+request; the host performs the PNG capture.
 
 [codecov-badge]: https://codecov.io/gh/stayhydated/frame-capture/branch/master/graph/badge.svg?component=frame-capture-routes
 [codecov]: https://codecov.io/gh/stayhydated/frame-capture
 [crate-badge]: https://img.shields.io/crates/v/frame-capture-routes.svg?label=frame-capture-routes
 [crate]: https://crates.io/crates/frame-capture-routes
 [bevy]: https://github.com/stayhydated/frame-capture/blob/master/crates/frame-capture-bevy/README.md
-[tests]: https://github.com/stayhydated/frame-capture/blob/master/crates/frame-capture-routes/tests/routes.rs

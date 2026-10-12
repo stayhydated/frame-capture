@@ -3,13 +3,6 @@
 [![CI][ci-badge]][ci]
 [![Codecov][codecov-badge]][codecov]
 [![Book][book-badge]][book]
-[![crates.io: frame-capture][frame-capture-badge]][frame-capture-crate]
-[![crates.io: frame-capture-bevy][frame-capture-bevy-badge]][frame-capture-bevy-crate]
-[![crates.io: frame-capture-macros][frame-capture-macros-badge]][frame-capture-macros-crate]
-[![crates.io: frame-capture-mcp][frame-capture-mcp-badge]][frame-capture-mcp-crate]
-[![crates.io: frame-capture-routes][frame-capture-routes-badge]][frame-capture-routes-crate]
-[![crates.io: frame-capture-routes-bevy][frame-capture-routes-bevy-badge]][frame-capture-routes-bevy-crate]
-[![crates.io: frame-capture-toml][frame-capture-toml-badge]][frame-capture-toml-crate]
 
 `frame-capture` gives Rust UI application authors typed route selection and
 deterministic PNG capture, with one catalog shared by interactive launches,
@@ -46,8 +39,7 @@ cargo run -p frame-capture-example-bevy
 ```
 
 `FRAME_CAPTURE_PATH` enables capture mode. Without it, the selected route runs
-normally. The Bevy facade saves the PNG itself; route-only integrations pass the
-validated route, size, frame, and path to their existing screenshot pipeline.
+normally.
 
 A successful run prints `Screenshot saved to target/dashboard.png`, writes the
 PNG, and exits.
@@ -58,20 +50,6 @@ PNG, and exits.
 [codecov]: https://codecov.io/gh/stayhydated/frame-capture
 [book-badge]: https://img.shields.io/badge/Book-mdBook-blue
 [book]: https://stayhydated.github.io/frame-capture/book/
-[frame-capture-badge]: https://img.shields.io/crates/v/frame-capture.svg?label=frame-capture
-[frame-capture-crate]: https://crates.io/crates/frame-capture
-[frame-capture-bevy-badge]: https://img.shields.io/crates/v/frame-capture-bevy.svg?label=frame-capture-bevy
-[frame-capture-bevy-crate]: https://crates.io/crates/frame-capture-bevy
-[frame-capture-macros-badge]: https://img.shields.io/crates/v/frame-capture-macros.svg?label=frame-capture-macros
-[frame-capture-macros-crate]: https://crates.io/crates/frame-capture-macros
-[frame-capture-mcp-badge]: https://img.shields.io/crates/v/frame-capture-mcp.svg?label=frame-capture-mcp
-[frame-capture-mcp-crate]: https://crates.io/crates/frame-capture-mcp
-[frame-capture-routes-badge]: https://img.shields.io/crates/v/frame-capture-routes.svg?label=frame-capture-routes
-[frame-capture-routes-crate]: https://crates.io/crates/frame-capture-routes
-[frame-capture-routes-bevy-badge]: https://img.shields.io/crates/v/frame-capture-routes-bevy.svg?label=frame-capture-routes-bevy
-[frame-capture-routes-bevy-crate]: https://crates.io/crates/frame-capture-routes-bevy
-[frame-capture-toml-badge]: https://img.shields.io/crates/v/frame-capture-toml.svg?label=frame-capture-toml
-[frame-capture-toml-crate]: https://crates.io/crates/frame-capture-toml
 [bevy-example]: examples/bevy/src/app.rs
 [core-readme]: crates/frame-capture/README.md
 [bevy-readme]: crates/frame-capture-bevy/README.md

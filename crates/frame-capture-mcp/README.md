@@ -20,10 +20,6 @@ list routes and return route details; the client remains responsible for
 building launch environment data, starting the application, and handling the
 resulting PNG.
 
-The servers remain available across requests until EOF, cancellation, or
-another explicit host shutdown signal. A host that wants one request terminates
-explicitly after receiving its result.
-
 ## Example
 
 An enum catalog can be queried without opening an MCP transport. The route
@@ -46,10 +42,8 @@ fn main() -> Result<(), frame_capture_mcp::CaptureMcpError> {
 ```
 
 This returns validated metadata without launching an app or writing a PNG.
-The [catalog tests][tests] exercise the same queries and server construction.
 
 [codecov-badge]: https://codecov.io/gh/stayhydated/frame-capture/branch/master/graph/badge.svg?component=frame-capture-mcp
 [codecov]: https://codecov.io/gh/stayhydated/frame-capture
 [crate-badge]: https://img.shields.io/crates/v/frame-capture-mcp.svg?label=frame-capture-mcp
 [crate]: https://crates.io/crates/frame-capture-mcp
-[tests]: https://github.com/stayhydated/frame-capture/blob/master/crates/frame-capture-mcp/tests/routes.rs

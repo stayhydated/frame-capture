@@ -15,10 +15,6 @@ Most applications that want the provided Bevy screenshot runtime should enable
 the `registry` feature on [`frame-capture-bevy`][bevy]. Depend on this crate directly
 when another runtime owns window setup, rendering, and screenshot output.
 
-Declare installers with `#[frame_capture_routes_bevy::capture_route(...)]`,
-validate the registry during startup, read the selected registered session, and
-call `session.install(&mut app)`.
-
 ## Features
 
 The default feature set enables `macros`.
@@ -56,13 +52,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-The installer is called for the selected route. The host still owns plugins,
-rendering, and saving `session.capture()`; the [registry tests][tests] cover
-registration and installation independently of a graphics backend.
+The selected installer adds an entity to the app.
 
 [codecov-badge]: https://codecov.io/gh/stayhydated/frame-capture/branch/master/graph/badge.svg?component=frame-capture-routes-bevy
 [codecov]: https://codecov.io/gh/stayhydated/frame-capture
 [crate-badge]: https://img.shields.io/crates/v/frame-capture-routes-bevy.svg?label=frame-capture-routes-bevy
 [crate]: https://crates.io/crates/frame-capture-routes-bevy
 [bevy]: https://github.com/stayhydated/frame-capture/blob/master/crates/frame-capture-bevy/README.md
-[tests]: https://github.com/stayhydated/frame-capture/blob/master/crates/frame-capture-routes-bevy/tests/registry.rs

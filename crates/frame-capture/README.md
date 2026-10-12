@@ -13,8 +13,7 @@ Requires Rust 1.99 or newer.
 
 ## Overview
 
-The default `macros` feature provides the `CaptureRoute` and `CaptureScenario`
-derives. The runtime surface provides typed route and scenario IDs,
+The runtime surface provides typed route and scenario IDs,
 `CaptureEnv`, capture sessions, pixel sizes, frame gates, launch environment
 data, and validated PNG output paths.
 
@@ -55,12 +54,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-The [launch-input tests][launch-tests] cover validation and environment mapping.
-
 [codecov-badge]: https://codecov.io/gh/stayhydated/frame-capture/branch/master/graph/badge.svg?component=frame-capture
 [codecov]: https://codecov.io/gh/stayhydated/frame-capture
 [crate-badge]: https://img.shields.io/crates/v/frame-capture.svg?label=frame-capture
 [crate]: https://crates.io/crates/frame-capture
 [bevy]: https://github.com/stayhydated/frame-capture/blob/master/crates/frame-capture-bevy/README.md
 [routes]: https://github.com/stayhydated/frame-capture/blob/master/crates/frame-capture-routes/README.md
-[launch-tests]: https://github.com/stayhydated/frame-capture/blob/master/crates/frame-capture/src/lib.rs

@@ -47,10 +47,6 @@ fn main() {
 }
 ```
 
-The derive generates typed IDs and metadata, as exercised by the
-[route derive tests][tests]. Application code normally selects the facade
-reexport in the table above.
-
 [codecov-badge]: https://codecov.io/gh/stayhydated/frame-capture/branch/master/graph/badge.svg?component=frame-capture-macros
 [codecov]: https://codecov.io/gh/stayhydated/frame-capture
 [crate-badge]: https://img.shields.io/crates/v/frame-capture-macros.svg?label=frame-capture-macros
@@ -58,4 +54,3 @@ reexport in the table above.
 [core]: https://github.com/stayhydated/frame-capture/blob/master/crates/frame-capture/README.md
 [routes]: https://github.com/stayhydated/frame-capture/blob/master/crates/frame-capture-routes/README.md
 [bevy]: https://github.com/stayhydated/frame-capture/blob/master/crates/frame-capture-bevy/README.md
-[tests]: https://github.com/stayhydated/frame-capture/blob/master/crates/frame-capture/tests/capture_route.rs

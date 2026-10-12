@@ -11,19 +11,7 @@ directly when the facade should own screenshot output; use
 Requires Rust 1.99 or newer and Bevy 0.19. Capture runs need a working graphics
 backend and an existing output directory.
 
-## Overview
-
-A Bevy integration follows four steps:
-
-1. Define routes with `CaptureRouteBevy`.
-2. Read a `BevyCaptureSession` before constructing `App`.
-3. Derive the window resolution from the session and add `DefaultPlugins`
-   through `session.add_capture_plugins`.
-4. Install the selected route with `RoutePlugin`, a session state/resource
-   helper, or a registered route installer.
-
-Use `CaptureReady` when capture must wait for asynchronous preparation. Enable
-the `registry` feature when routes are registered as `fn(&mut App)` installers.
+Use `CaptureReady` when capture must wait for asynchronous preparation.
 
 ## Features
 

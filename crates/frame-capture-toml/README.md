@@ -29,7 +29,7 @@ sets the shared default size to 1920 × 1080.
 
 ## Example
 
-A custom tool can parse the same text through the public API:
+A custom tool can parse the same text with [`CaptureToml::parse`][parser]:
 
 ```rust
 use frame_capture_toml::CaptureToml;
@@ -43,8 +43,6 @@ fn main() -> Result<(), frame_capture_toml::CaptureTomlError> {
     Ok(())
 }
 ```
-
-The [parser and its tests][parser] own the format and validation rules.
 
 [codecov-badge]: https://codecov.io/gh/stayhydated/frame-capture/branch/master/graph/badge.svg?component=frame-capture-toml
 [codecov]: https://codecov.io/gh/stayhydated/frame-capture
