@@ -8,10 +8,12 @@ route interactively or through an offscreen PNG capture runtime. Depend on it
 directly when the facade should own screenshot output; use
 [`frame-capture-routes-bevy`][routes-bevy] when the host owns that runtime.
 
-Requires Rust 1.99 or newer and Bevy 0.19. Capture runs need a working graphics
+Requires Rust 1.99 or newer and Bevy 0.20. Capture runs need a working graphics
 backend and an existing output directory.
 
-Use `CaptureReady` when capture must wait for asynchronous preparation.
+Use `CaptureReady` when capture must wait for asynchronous preparation. Order
+the readiness system in `Update` with `.before(CaptureSystems)` so capture sees
+its changes in the same update.
 
 ## Features
 
@@ -47,7 +49,9 @@ session.add_route_state(&mut app);
 
 The complete application adds a camera and scene in `Startup`, then runs the
 app. With `FRAME_CAPTURE_PATH`, it writes the selected route to the requested
-PNG and exits; without it, the same route remains interactive.
+PNG and exits; without it, the same route remains interactive. The entrypoint
+returns Bevy's `AppExit`, so PNG save failures produce a nonzero process exit
+status.
 
 [codecov-badge]: https://codecov.io/gh/stayhydated/frame-capture/branch/master/graph/badge.svg?component=frame-capture-bevy
 [codecov]: https://codecov.io/gh/stayhydated/frame-capture

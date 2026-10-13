@@ -3,7 +3,10 @@
 //! Live mode uses the provided Bevy plugin group normally. In capture mode, the
 //! facade configures Bevy without a primary window, runs on
 //! `ScheduleRunnerPlugin`, redirects cameras to an offscreen image, saves that
-//! image through Bevy's screenshot API, then emits `AppExit::Success`.
+//! image through Bevy's screenshot API, then emits `AppExit::Success` on success
+//! or `AppExit::error()` on a save failure. Return the [`bevy::app::AppExit`] from
+//! [`bevy::app::App::run`] through the entrypoint to preserve the process exit
+//! status.
 
 mod plugins;
 mod runtime;
@@ -39,7 +42,9 @@ pub use self::{
         RoutePlugin, RouteResourcePlugin, RouteStatePlugin, ScenarioPlugin, ScenarioResourcePlugin,
         ScenarioStatePlugin, SelectedCaptureRoute, SelectedCaptureScenario, SelectedStatePlugin,
     },
-    runtime::{BevyCaptureAppExt, CapturePlugin, CaptureReady, CaptureWarmupPlugin},
+    runtime::{
+        BevyCaptureAppExt, CapturePlugin, CaptureReady, CaptureSystems, CaptureWarmupPlugin,
+    },
     save::CaptureSaveError,
     session::{BevyCaptureConfig, BevyCaptureEnvExt, BevyCaptureSession},
     window::{capture_window_plugin, is_capture_enabled},
@@ -61,10 +66,10 @@ pub mod prelude {
         CapturePlugin, CaptureReady, CaptureRoute, CaptureRouteCatalog, CaptureRouteId,
         CaptureRouteIdRef, CaptureRouteInfo, CaptureRouteSource, CaptureRouteVariant,
         CaptureScenario, CaptureScenarioId, CaptureScenarioIdRef, CaptureSession, CaptureStateId,
-        CaptureStateIdRef, CaptureWarmupPlugin, NoCaptureScenario, ParseCaptureEnvVarError,
-        ParseCaptureFrameError, ParseRouteError, PixelSize, RoutePlugin, RouteResourcePlugin,
-        RouteSpec, RouteStatePlugin, ScenarioPlugin, ScenarioResourcePlugin, ScenarioStatePlugin,
-        SelectedCaptureRoute, SelectedCaptureScenario, SelectedStatePlugin,
+        CaptureStateIdRef, CaptureSystems, CaptureWarmupPlugin, NoCaptureScenario,
+        ParseCaptureEnvVarError, ParseCaptureFrameError, ParseRouteError, PixelSize, RoutePlugin,
+        RouteResourcePlugin, RouteSpec, RouteStatePlugin, ScenarioPlugin, ScenarioResourcePlugin,
+        ScenarioStatePlugin, SelectedCaptureRoute, SelectedCaptureScenario, SelectedStatePlugin,
         capture_output_path_for_name, capture_output_path_for_stem, capture_route_catalog,
         capture_route_infos, capture_window_plugin, is_capture_enabled,
     };

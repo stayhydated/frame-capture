@@ -14,6 +14,25 @@ use crate::{BevyCaptureConfig, DEFAULT_CAPTURE_FPS, save::save_capture_to_disk};
 
 pub struct CapturePlugin;
 
+/// Systems that request an offscreen screenshot in [`Update`].
+///
+/// Order application readiness systems before this set so their changes are
+/// visible to the capture request in the same update.
+///
+/// ```
+/// use bevy::prelude::*;
+/// use frame_capture_bevy::{CaptureReady, CaptureSystems};
+///
+/// fn mark_ready(mut ready: ResMut<CaptureReady>) {
+///     ready.mark_ready();
+/// }
+///
+/// let mut app = App::new();
+/// app.add_systems(Update, mark_ready.before(CaptureSystems));
+/// ```
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, SystemSet)]
+pub struct CaptureSystems;
+
 #[derive(Default, Resource)]
 struct CaptureState {
     gate: CaptureFrameGate,
@@ -43,6 +62,12 @@ struct CaptureWarmup {
 pub trait BevyCaptureAppExt {
     fn add_capture_runtime(&mut self, capture: Option<CaptureConfig>) -> &mut Self;
 
+    /// Adds the supplied plugin group and configures the capture runtime.
+    ///
+    /// Live mode installs the group normally. Capture mode disables any
+    /// [`WinitPlugin`] in the group and replaces any supplied
+    /// [`ScheduleRunnerPlugin`] with the capture runner. The group must supply
+    /// the renderer and image assets used for offscreen capture.
     fn add_capture_plugins<P: PluginGroup>(
         &mut self,
         plugins: P,
@@ -83,7 +108,7 @@ impl Plugin for CapturePlugin {
         app.init_resource::<CaptureState>()
             .init_resource::<CaptureReady>()
             .add_systems(PostStartup, setup_capture_target)
-            .add_systems(Update, trigger_capture);
+            .add_systems(Update, trigger_capture.in_set(CaptureSystems));
     }
 }
 
@@ -107,7 +132,7 @@ impl Plugin for CaptureWarmupPlugin {
             .insert_resource(CaptureWarmup {
                 frames_remaining: self.frames,
             })
-            .add_systems(Update, mark_capture_warmup_ready.before(trigger_capture));
+            .add_systems(Update, mark_capture_warmup_ready.before(CaptureSystems));
     }
 }
 
@@ -130,7 +155,14 @@ impl BevyCaptureAppExt for App {
         capture: Option<CaptureConfig>,
     ) -> &mut Self {
         if capture.is_some() {
-            self.add_plugins(plugins.build().disable::<WinitPlugin>());
+            let mut plugins = plugins.build();
+            if plugins.contains::<WinitPlugin>() {
+                plugins = plugins.disable::<WinitPlugin>();
+            }
+            if plugins.contains::<ScheduleRunnerPlugin>() {
+                plugins = plugins.disable::<ScheduleRunnerPlugin>();
+            }
+            self.add_plugins(plugins);
         } else {
             self.add_plugins(plugins);
         }

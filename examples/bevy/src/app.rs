@@ -1,5 +1,6 @@
 use bevy::{
     prelude::*,
+    sprite::SpriteAlphaMode,
     window::{PresentMode, Window},
 };
 use frame_capture_bevy::{BevyCaptureEnvExt as _, CaptureEnv, CaptureRoute as _};
@@ -10,7 +11,7 @@ const DEMO_MARKER: &str = "frame-capture-bevy-demo";
 #[derive(Clone, Copy, Resource)]
 struct ActiveScenario(Option<BevyExampleScenario>);
 
-pub(crate) fn run() -> Result<(), Box<dyn std::error::Error>> {
+pub(crate) fn run() -> Result<AppExit, Box<dyn std::error::Error>> {
     let session = CaptureEnv::frame_capture()
         .read_bevy_session_with_scenario::<BevyExampleRoute, BevyExampleScenario>()?;
     let route = session.route();
@@ -32,20 +33,16 @@ pub(crate) fn run() -> Result<(), Box<dyn std::error::Error>> {
     session.add_route_state(&mut app);
     session.insert_mapped_scenario_resource(&mut app, ActiveScenario);
     app.add_systems(Startup, setup_scene);
-    app.run();
-
-    Ok(())
+    Ok(app.run())
 }
 
 fn setup_scene(
     mut commands: Commands,
     route: Res<State<BevyExampleRoute>>,
-    scenario: Option<Res<ActiveScenario>>,
+    scenario: Res<ActiveScenario>,
 ) {
     commands.spawn(Camera2d);
-    let alert = scenario
-        .as_deref()
-        .is_some_and(|scenario| matches!(scenario.0, Some(BevyExampleScenario::Alert)));
+    let alert = matches!(scenario.0, Some(BevyExampleScenario::Alert));
 
     let route = *route.get();
     let (background, accent, label, metric) = match route {
@@ -71,19 +68,31 @@ fn setup_scene(
 
     commands.insert_resource(ClearColor(background));
     commands.spawn((
-        Sprite::from_color(Color::srgb(0.15, 0.17, 0.20), Vec2::new(720.0, 340.0)),
+        Sprite {
+            alpha_mode: SpriteAlphaMode::Opaque,
+            ..Sprite::from_color(Color::srgb(0.15, 0.17, 0.20), Vec2::new(720.0, 340.0))
+        },
         Transform::from_xyz(0.0, 0.0, 0.0),
     ));
     commands.spawn((
-        Sprite::from_color(accent, Vec2::new(720.0, 12.0)),
+        Sprite {
+            alpha_mode: SpriteAlphaMode::Opaque,
+            ..Sprite::from_color(accent, Vec2::new(720.0, 12.0))
+        },
         Transform::from_xyz(0.0, 176.0, 1.0),
     ));
     commands.spawn((
-        Sprite::from_color(Color::srgb(0.22, 0.24, 0.28), Vec2::new(260.0, 150.0)),
+        Sprite {
+            alpha_mode: SpriteAlphaMode::Opaque,
+            ..Sprite::from_color(Color::srgb(0.22, 0.24, 0.28), Vec2::new(260.0, 150.0))
+        },
         Transform::from_xyz(-190.0, -18.0, 1.0),
     ));
     commands.spawn((
-        Sprite::from_color(Color::srgb(0.18, 0.20, 0.24), Vec2::new(260.0, 150.0)),
+        Sprite {
+            alpha_mode: SpriteAlphaMode::Opaque,
+            ..Sprite::from_color(Color::srgb(0.18, 0.20, 0.24), Vec2::new(260.0, 150.0))
+        },
         Transform::from_xyz(190.0, -18.0, 1.0),
     ));
     commands.spawn((

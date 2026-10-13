@@ -1,5 +1,7 @@
+use bevy::app::AppExit;
+
 mod app;
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<AppExit, Box<dyn std::error::Error>> {
     app::run()
 }

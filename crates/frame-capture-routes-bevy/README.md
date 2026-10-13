@@ -7,7 +7,7 @@ Bevy `App` route registration for host-owned capture runtimes. Each registered
 route installs itself through `fn(&mut App)` and carries a stable ID, title, and
 default pixel size.
 
-Requires Rust 1.99 or newer and Bevy 0.19.
+Requires Rust 1.99 or newer and Bevy 0.20.
 
 ## Overview
 

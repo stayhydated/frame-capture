@@ -10,7 +10,7 @@ Read the session before constructing `App`, derive the window resolution from
 it, and add Bevy plugins through the session. This startup fragment uses the
 `UiRoute` catalog from [typed routes](routes.md), derived with
 `CaptureRouteBevy`, and application-owned `DashboardPlugin` and `ReviewPlugin`
-types:
+types. The entrypoint returns `Result<AppExit, Box<dyn std::error::Error>>`:
 
 ```rust,ignore
 use bevy::{
@@ -42,7 +42,7 @@ app.add_plugins(RoutePlugin::new(route, |route, app: &mut App| {
         UiRoute::Review => app.add_plugins(ReviewPlugin),
     };
 }));
-app.run();
+Ok(app.run())
 ```
 
 Do not add `DefaultPlugins` separately. In live mode,
@@ -50,6 +50,12 @@ Do not add `DefaultPlugins` separately. In live mode,
 disables the primary-window path, adds the schedule runner, redirects cameras
 created during `Startup` to an offscreen image in `PostStartup`, saves the
 requested PNG, and exits.
+
+Return the `AppExit` from `app.run()` through the entrypoint so capture failures
+produce a nonzero process exit status. Custom plugin groups may omit
+`WinitPlugin`; the facade disables it when present and replaces any supplied
+`ScheduleRunnerPlugin` with its capture runner. The group still supplies the
+renderer and image assets used for capture.
 
 Use `read_bevy_session_with_scenario` when the application maps
 `FRAME_CAPTURE_SCENARIO` into plugins, states, or resources.
@@ -86,14 +92,18 @@ size, and both resolution helpers set the scale-factor override to `1.0`.
 
 `CaptureReady` defaults to ready. Insert `CaptureReady::pending()` only when
 the capture must wait for asynchronous data or assets, then mark it ready from
-a system. Here, `assets_loaded` is an application-owned run condition that
-returns true once preparation is complete:
+a system ordered before `CaptureSystems` in `Update`. This ensures capture sees
+readiness changes in the same update. Here, `assets_loaded` is an
+application-owned run condition that returns true once preparation is complete:
 
 ```rust,ignore
-use frame_capture_bevy::CaptureReady;
+use frame_capture_bevy::{CaptureReady, CaptureSystems};
 
 app.insert_resource(CaptureReady::pending())
-    .add_systems(Update, mark_loaded.run_if(assets_loaded));
+    .add_systems(
+        Update,
+        mark_loaded.run_if(assets_loaded).before(CaptureSystems),
+    );
 
 fn mark_loaded(mut ready: ResMut<CaptureReady>) {
     ready.mark_ready();
@@ -111,7 +121,8 @@ both readiness and the frame gate are satisfied.
 Enable the `registry` feature when route installers live beside Bevy feature
 modules. A registered session exposes the selected route spec and optional
 capture config instead of the typed session's window helpers, so configure the
-window and capture runtime before installing the route:
+window and capture runtime before installing the route. This fragment uses the
+same entrypoint return type as the typed session example:
 
 ```toml
 [dependencies]
@@ -160,7 +171,7 @@ app.add_capture_plugins(
     capture,
 );
 session.install(&mut app);
-app.run();
+Ok(app.run())
 ```
 
 The registered-route session resolves route and capture variables. If the app

@@ -21,10 +21,12 @@ description: Integrate, review, or refactor frame-capture-bevy live and offscree
 7. Spawn capture cameras and scene content by `Startup`, before the offscreen
    target is assigned in `PostStartup`.
 8. Use `CaptureReady::pending()` for asynchronous preparation and mark it ready
-   from a system. Use `CaptureWarmupPlugin::frames(n)` when a fixed delay is
-   sufficient; both mechanisms write the same readiness resource.
-9. Run the app normally. Capture mode saves the requested PNG and exits through
-   `AppExit`.
+   from an `Update` system ordered with `.before(CaptureSystems)`. Use
+   `CaptureWarmupPlugin::frames(n)` when a fixed delay is sufficient; both
+   mechanisms write the same readiness resource.
+9. Return the `AppExit` from `app.run()` through the entrypoint. For fallible
+   setup, return `Result<AppExit, Box<dyn std::error::Error>>` and finish with
+   `Ok(app.run())` so capture failures set a nonzero process exit status.
 
 ## Map selected inputs
 
@@ -45,8 +47,10 @@ window and runtime from `session.capture()`, then call
 ## Capture contracts
 
 - Live mode keeps the supplied Bevy plugin group's normal behavior.
-- Capture mode disables `WinitPlugin`, removes the primary window, runs the
-  schedule runner, redirects cameras to an offscreen image, and saves the PNG.
+- Capture mode disables `WinitPlugin` when present in the supplied group, removes
+  the primary window, runs the schedule runner, redirects cameras to an offscreen
+  image, and saves the PNG. It replaces any supplied `ScheduleRunnerPlugin` with
+  its capture runner. Custom groups supply the renderer and image assets.
 - Route, scenario, size, frame, output path, readiness, and warmup inputs must
   all affect the capture as documented.
 - The output directory must exist before Bevy saves the image.

@@ -23,8 +23,8 @@ version = "0.2.3"
 
 [workspace.dependencies]
 anyhow = "1.0"
-bevy = { default-features = false, version = "0.19" }
-bevy_app = { default-features = false, version = "0.19" }
+bevy = { default-features = false, version = "0.20" }
+bevy_app = { default-features = false, version = "0.20" }
 bon = "3.10"
 clap = "4.6"
 darling = "0.24"

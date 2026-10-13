@@ -11,6 +11,9 @@
 
 The startup fragment below assumes application-owned `DashboardPlugin` and
 `ReviewPlugin` types. Each plugin should spawn its camera and scene in `Startup`.
+The entrypoint returns `Result<AppExit, Box<dyn std::error::Error>>` and preserves
+the `AppExit` from `app.run()` so capture failures set a nonzero process exit
+status.
 
 ```rust,ignore
 use bevy::{
@@ -50,7 +53,7 @@ app.add_plugins(RoutePlugin::new(route, |route, app: &mut App| {
         UiRoute::Review => app.add_plugins(ReviewPlugin),
     };
 }));
-app.run();
+Ok(app.run())
 ```
 
 Do not add `DefaultPlugins` a second time. Capture cameras and scene content
@@ -75,13 +78,17 @@ helpers.
 ## Wait for readiness
 
 Use an application-owned `assets_loaded` run condition that returns true once
-asynchronous preparation is complete:
+asynchronous preparation is complete. Order the readiness system before
+`CaptureSystems` in `Update` so capture sees its changes in the same update:
 
 ```rust,ignore
-use frame_capture_bevy::CaptureReady;
+use frame_capture_bevy::{CaptureReady, CaptureSystems};
 
 app.insert_resource(CaptureReady::pending())
-    .add_systems(Update, mark_loaded.run_if(assets_loaded));
+    .add_systems(
+        Update,
+        mark_loaded.run_if(assets_loaded).before(CaptureSystems),
+    );
 
 fn mark_loaded(mut ready: ResMut<CaptureReady>) {
     ready.mark_ready();
@@ -139,7 +146,7 @@ app.add_capture_plugins(
     capture,
 );
 session.install(&mut app);
-app.run();
+Ok(app.run())
 ```
 
 Registered sessions parse route and capture variables. Read and apply a typed

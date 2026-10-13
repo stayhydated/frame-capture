@@ -17,7 +17,7 @@ offscreen captures from the same binary:
 
 ```toml
 [dependencies]
-bevy = "0.19"
+bevy = "0.20"
 frame-capture-bevy = "0.2"
 ```
 
