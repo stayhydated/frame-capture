@@ -15,10 +15,10 @@ default = [ "capture" ]
 capture = [ "dep:gpui_wgpu", "gpui-kit/test-support" ]
 
 [dependencies]
-gpui-kit = "0.7.0"
+gpui-kit = "0.7.3"
 gpui_wgpu = { features = [
   "font-kit",
-], optional = true, package = "gpui-pre-wgpu", version = "=0.3.7" }
+], optional = true, package = "gpui-pre-wgpu", version = "=0.3.9" }
 image = { default-features = false, features = [ "png" ], version = "0.25.10" }
 
 frame-capture-routes = { default-features = false, features = [
