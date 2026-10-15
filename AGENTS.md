@@ -61,6 +61,8 @@ workspace. Validate it with `--manifest-path examples/gpui/Cargo.toml`.
   Rust and TOML, so use it when those surfaces need formatting.
 - For rustdocs, use `just test-docs` (builds documentation and opens it).
   CI uses `cargo doc --workspace --all-features --no-deps --locked`.
+  To execute doctests, use `cargo test --workspace --all-features --doc --locked`,
+  also included in `just test`; documentation builds do not execute examples.
 - For book changes, run `cargo xtask build book` and
   `cargo xtask build llms-txt`. Use `MDBOOK_BUILD__CREATE_MISSING=false` during
   validation so a missing summary target is reported without creating a page.

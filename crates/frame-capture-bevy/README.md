@@ -21,7 +21,6 @@ The default feature set enables `macros`. `registry` also enables `macros`.
 
 | Feature | Default | Purpose |
 | --- | --- | --- |
-| `default` | Yes | Enables `macros`. |
 | `macros` | Yes | Reexports `CaptureRouteBevy` and `CaptureScenarioBevy`. |
 | `registry` | No | Enables `macros`, the `capture_route` attribute, and `frame-capture-routes-bevy` registry/session APIs. |
 

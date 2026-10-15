@@ -27,7 +27,6 @@ The default feature set enables `macros`. `json-schema` is opt-in.
 
 | Feature | Default | Purpose |
 | --- | --- | --- |
-| `default` | Yes | Enables `macros`. |
 | `json-schema` | No | Enables Schemars schemas for capture metadata and validated protocol values. |
 | `macros` | Yes | Reexports `CaptureRoute` and `CaptureScenario` from `frame-capture-macros`. |
 

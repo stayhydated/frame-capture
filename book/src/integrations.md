@@ -52,3 +52,11 @@ frame-capture = "0.2"
 Use [route-only applications](route_only.md) for the host-owned capture
 workflow. Use [Bevy applications](bevy.md) when `frame-capture-bevy` should own
 the runtime.
+
+The facades reexport their route and scenario derives through the `macros`
+feature. Applications normally use those reexports. Depend on
+`frame-capture-macros` directly only when authoring a facade that needs to select
+the generated runtime path.
+
+For custom tools that parse shared default sizes, use `frame-capture-toml` and
+the [configuration guide](configuration.md#parse-defaults-in-a-custom-tool).

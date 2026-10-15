@@ -29,6 +29,34 @@ Capture sizes use this precedence:
 Every dimension must be greater than zero. The compile-time macro reports an
 error if it cannot resolve both dimensions.
 
+## Parse defaults in a custom tool
+
+Use `frame-capture-toml` directly when a tool needs to read the same default-size
+format as the route macros. `CaptureToml::parse` accepts document text; the
+caller chooses and reads the file. The parser does not search parent directories
+or read `FRAME_CAPTURE_TOML`.
+
+With `frame-capture-toml` available to the tool, parse a complete document:
+
+```rust
+use frame_capture_toml::CaptureToml;
+
+fn main() -> Result<(), frame_capture_toml::CaptureTomlError> {
+    let defaults = CaptureToml::parse(
+        "[default_size]\nwidth = 1280\nheight = 720\n",
+    )?;
+    assert_eq!(defaults.default_size.width(), 1280);
+    assert_eq!(defaults.default_size.height(), 720);
+    Ok(())
+}
+```
+
+The result contains the validated pixel dimensions. If parsing fails, check that
+`[default_size]` supplies both `width` and `height` as positive integers that fit
+in `u32`. Invalid TOML and values outside that integer range produce
+`CaptureTomlError::Toml`; missing or zero dimensions produce the corresponding
+dimension error. A missing `[default_size]` table produces `MissingDefaultSize`.
+
 ## Build deterministic output paths
 
 Use `CaptureOutputPath` for deterministic route-local PNG locations. This

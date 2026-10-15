@@ -25,7 +25,6 @@ The default feature set enables `macros`.
 
 | Feature | Default | Purpose |
 | --- | --- | --- |
-| `default` | Yes | Enables `macros`. |
 | `macros` | Yes | Reexports `CaptureRouteRoutes`, `CaptureScenarioRoutes`, and `capture_route` for `fn()` installers. |
 
 ## Example
