@@ -21,7 +21,6 @@ The default feature set enables `macros`.
 
 | Feature | Default | Purpose |
 | --- | --- | --- |
-| `default` | Yes | Enables `macros`. |
 | `macros` | Yes | Reexports the Bevy `capture_route` attribute and enables `frame-capture/macros` for route/scenario derives. |
 
 ## Example

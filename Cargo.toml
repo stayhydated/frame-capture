@@ -22,19 +22,19 @@ rust-version = "1.99"
 version = "0.2.3"
 
 [workspace.dependencies]
-anyhow = "1.0"
-bevy = { default-features = false, version = "0.20" }
-bevy_app = { default-features = false, version = "0.20" }
-bon = "3.10"
-clap = "4.6"
-darling = "0.24"
+anyhow = "1.0.104"
+bevy = { default-features = false, version = "0.20.0" }
+bevy_app = { default-features = false, version = "0.20.0" }
+bon = "3.10.2"
+clap = "4.6.7"
+darling = "0.24.1"
 derive_more = { default-features = false, features = [
   "as_ref",
   "deref",
   "display",
   "from",
-], version = "2.1" }
-dioxus = { default-features = false, version = "0.7" }
+], version = "2.1.1" }
+dioxus = { default-features = false, version = "0.7.10" }
 frame-capture = { default-features = false, path = "crates/frame-capture", version = "0.2.3" }
 frame-capture-bevy = { path = "crates/frame-capture-bevy", version = "0.2.3" }
 frame-capture-macros = { path = "crates/frame-capture-macros", version = "0.2.3" }
@@ -42,30 +42,30 @@ frame-capture-mcp = { path = "crates/frame-capture-mcp", version = "0.2.3" }
 frame-capture-routes = { default-features = false, path = "crates/frame-capture-routes", version = "0.2.3" }
 frame-capture-routes-bevy = { path = "crates/frame-capture-routes-bevy", version = "0.2.3" }
 frame-capture-toml = { path = "crates/frame-capture-toml", version = "0.2.3" }
-fs-err = "3.3"
-heck = "0.5"
-image = { default-features = false, features = [ "png" ], version = "0.25" }
-inventory = "0.3"
+fs-err = "3.3.2"
+heck = "0.5.0"
+image = { default-features = false, features = [ "png" ], version = "0.25.10" }
+inventory = "0.3.25"
 koruma = { default-features = false, version = "0.13.0" }
-proc-macro2 = "1.0"
-quote = "1.0"
+proc-macro2 = "1.0.107"
+quote = "1.0.47"
 rmcp = { default-features = false, features = [
   "macros",
   "server",
   "transport-io",
-], version = "3.5" }
-schemars = "1.2"
-serde = { features = [ "derive" ], version = "1.0" }
-serde_json = "1.0"
-serde_with = { default-features = false, features = [ "macros" ], version = "3.24" }
-stayhydated-dioxus = { git = "https://github.com/stayhydated/shared", rev = "d9c54bbb850b58b822458a6a15eb75ba64034a31" }
-stayhydated-site = { git = "https://github.com/stayhydated/shared", rev = "d9c54bbb850b58b822458a6a15eb75ba64034a31" }
-stayhydated-xtask = { git = "https://github.com/stayhydated/shared", rev = "d9c54bbb850b58b822458a6a15eb75ba64034a31" }
-syn = "3.0"
-thiserror = "2.0"
-toml = "1.1"
+], version = "3.5.1" }
+schemars = "1.2.3"
+serde = { features = [ "derive" ], version = "1.0.229" }
+serde_json = "1.0.154"
+serde_with = { default-features = false, features = [ "macros" ], version = "3.24.0" }
+stayhydated-dioxus = { git = "https://github.com/stayhydated/shared", rev = "3136b369bb54312096ad83ba74735aab29109835" }
+stayhydated-site = { git = "https://github.com/stayhydated/shared", rev = "3136b369bb54312096ad83ba74735aab29109835" }
+stayhydated-xtask = { git = "https://github.com/stayhydated/shared", rev = "3136b369bb54312096ad83ba74735aab29109835" }
+syn = "3.0.9"
+thiserror = "2.0.21"
+toml = "1.1.8"
 web = { path = "web" }
-web-sys = { features = [ "Location", "Window" ], version = "0.3" }
+web-sys = { features = [ "Location", "Window" ], version = "0.3.106" }
 
 [profile.dev]
 codegen-units = 16

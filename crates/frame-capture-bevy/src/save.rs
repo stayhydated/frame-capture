@@ -91,10 +91,8 @@ mod tests {
             Err(CaptureSaveError::UnknownImageFormat { .. })
         ));
 
-        let path = std::env::temp_dir()
-            .join("frame-capture-missing-parent")
-            .join("capture.png");
-        let _ = std::fs::remove_dir_all(path.parent().unwrap());
+        // An executable is a file, so it cannot be the output's parent directory.
+        let path = std::env::current_exe().unwrap().join("capture.png");
         assert!(matches!(
             save_image_to_disk(path, test_image()),
             Err(CaptureSaveError::Save { .. })
