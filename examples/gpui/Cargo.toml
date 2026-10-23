@@ -15,7 +15,7 @@ default = [ "capture" ]
 capture = [ "dep:gpui_wgpu", "gpui-kit/test-support" ]
 
 [dependencies]
-gpui-kit = "0.7.3"
+gpui-kit = "0.8.0"
 gpui_wgpu = { features = [
   "font-kit",
 ], optional = true, package = "gpui-pre-wgpu", version = "=0.3.9" }
