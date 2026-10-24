@@ -19,7 +19,7 @@ edition = "2024"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/stayhydated/frame-capture"
 rust-version = "1.99"
-version = "0.2.3"
+version = "0.2.4"
 
 [workspace.dependencies]
 anyhow = "1.0.104"
@@ -35,13 +35,13 @@ derive_more = { default-features = false, features = [
   "from",
 ], version = "2.1.1" }
 dioxus = { default-features = false, version = "0.7.10" }
-frame-capture = { default-features = false, path = "crates/frame-capture", version = "0.2.3" }
-frame-capture-bevy = { path = "crates/frame-capture-bevy", version = "0.2.3" }
-frame-capture-macros = { path = "crates/frame-capture-macros", version = "0.2.3" }
-frame-capture-mcp = { path = "crates/frame-capture-mcp", version = "0.2.3" }
-frame-capture-routes = { default-features = false, path = "crates/frame-capture-routes", version = "0.2.3" }
-frame-capture-routes-bevy = { path = "crates/frame-capture-routes-bevy", version = "0.2.3" }
-frame-capture-toml = { path = "crates/frame-capture-toml", version = "0.2.3" }
+frame-capture = { default-features = false, path = "crates/frame-capture", version = "0.2.4" }
+frame-capture-bevy = { path = "crates/frame-capture-bevy", version = "0.2.4" }
+frame-capture-macros = { path = "crates/frame-capture-macros", version = "0.2.4" }
+frame-capture-mcp = { path = "crates/frame-capture-mcp", version = "0.2.4" }
+frame-capture-routes = { default-features = false, path = "crates/frame-capture-routes", version = "0.2.4" }
+frame-capture-routes-bevy = { path = "crates/frame-capture-routes-bevy", version = "0.2.4" }
+frame-capture-toml = { path = "crates/frame-capture-toml", version = "0.2.4" }
 fs-err = "3.3.2"
 heck = "0.5.0"
 image = { default-features = false, features = [ "png" ], version = "0.25.10" }

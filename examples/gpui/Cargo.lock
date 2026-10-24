@@ -1875,7 +1875,7 @@ dependencies = [
 
 [[package]]
 name = "frame-capture"
-version = "0.2.3"
+version = "0.2.4"
 dependencies = [
  "bon",
  "derive_more",
@@ -1898,7 +1898,7 @@ dependencies = [
 
 [[package]]
 name = "frame-capture-macros"
-version = "0.2.3"
+version = "0.2.4"
 dependencies = [
  "darling",
  "frame-capture-toml",
@@ -1911,7 +1911,7 @@ dependencies = [
 
 [[package]]
 name = "frame-capture-routes"
-version = "0.2.3"
+version = "0.2.4"
 dependencies = [
  "frame-capture",
  "frame-capture-macros",
@@ -1921,7 +1921,7 @@ dependencies = [
 
 [[package]]
 name = "frame-capture-toml"
-version = "0.2.3"
+version = "0.2.4"
 dependencies = [
  "serde",
  "thiserror 2.0.21",
