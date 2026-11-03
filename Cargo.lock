@@ -3868,7 +3868,7 @@ dependencies = [
 
 [[package]]
 name = "frame-capture"
-version = "0.2.4"
+version = "0.2.5"
 dependencies = [
  "bon",
  "derive_more",
@@ -3886,7 +3886,7 @@ dependencies = [
 
 [[package]]
 name = "frame-capture-bevy"
-version = "0.2.4"
+version = "0.2.5"
 dependencies = [
  "bevy",
  "frame-capture",
@@ -3898,7 +3898,7 @@ dependencies = [
 
 [[package]]
 name = "frame-capture-example-bevy"
-version = "0.2.4"
+version = "0.2.5"
 dependencies = [
  "bevy",
  "frame-capture-bevy",
@@ -3906,7 +3906,7 @@ dependencies = [
 
 [[package]]
 name = "frame-capture-macros"
-version = "0.2.4"
+version = "0.2.5"
 dependencies = [
  "darling 0.24.1",
  "frame-capture-toml",
@@ -3919,7 +3919,7 @@ dependencies = [
 
 [[package]]
 name = "frame-capture-mcp"
-version = "0.2.4"
+version = "0.2.5"
 dependencies = [
  "frame-capture",
  "frame-capture-routes",
@@ -3930,7 +3930,7 @@ dependencies = [
 
 [[package]]
 name = "frame-capture-routes"
-version = "0.2.4"
+version = "0.2.5"
 dependencies = [
  "frame-capture",
  "frame-capture-macros",
@@ -3940,7 +3940,7 @@ dependencies = [
 
 [[package]]
 name = "frame-capture-routes-bevy"
-version = "0.2.4"
+version = "0.2.5"
 dependencies = [
  "bevy_app",
  "frame-capture",
@@ -3951,7 +3951,7 @@ dependencies = [
 
 [[package]]
 name = "frame-capture-toml"
-version = "0.2.4"
+version = "0.2.5"
 dependencies = [
  "serde",
  "thiserror 2.0.21",
@@ -4929,18 +4929,18 @@ checksum = "a4933f3f57a8e9d9da04db23fb153356ecaf00cbd14aee46279c33dc80925c37"
 
 [[package]]
 name = "koruma"
-version = "0.13.1"
+version = "0.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4184a92b9943049f3f8a52b85437eedbd2a4e38ba8d852e7d979506d5f59a09e"
+checksum = "720de5c03f371ea0ce5fc890caeefcfc515e3cfd56de50b0fb0e255c8e3207fc"
 dependencies = [
  "koruma-core",
 ]
 
 [[package]]
 name = "koruma-core"
-version = "0.13.1"
+version = "0.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9e29cb26aac16ec54210da57ffcb6683286c820fca96840d92f987757a549aa6"
+checksum = "3d1eb03a2c5eb787751184a36a6ca14c67b9122a033e6a38cd63269db59ebc71"
 
 [[package]]
 name = "lalrpop-util"
@@ -7515,7 +7515,7 @@ checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 [[package]]
 name = "stayhydated-dioxus"
 version = "0.1.1"
-source = "git+https://github.com/stayhydated/shared?rev=d531bbbf740688a473e8230a90f7b6ebfaa24e70#d531bbbf740688a473e8230a90f7b6ebfaa24e70"
+source = "git+https://github.com/stayhydated/shared?rev=1569baacf4fb2a94bbf7d9f02615332407e104df#1569baacf4fb2a94bbf7d9f02615332407e104df"
 dependencies = [
  "bon",
  "dioxus",
@@ -7529,7 +7529,7 @@ dependencies = [
 [[package]]
 name = "stayhydated-dioxus-core"
 version = "0.1.1"
-source = "git+https://github.com/stayhydated/shared?rev=d531bbbf740688a473e8230a90f7b6ebfaa24e70#d531bbbf740688a473e8230a90f7b6ebfaa24e70"
+source = "git+https://github.com/stayhydated/shared?rev=1569baacf4fb2a94bbf7d9f02615332407e104df#1569baacf4fb2a94bbf7d9f02615332407e104df"
 dependencies = [
  "bytemuck",
  "derive_more",
@@ -7546,7 +7546,7 @@ dependencies = [
 [[package]]
 name = "stayhydated-site"
 version = "0.1.1"
-source = "git+https://github.com/stayhydated/shared?rev=d531bbbf740688a473e8230a90f7b6ebfaa24e70#d531bbbf740688a473e8230a90f7b6ebfaa24e70"
+source = "git+https://github.com/stayhydated/shared?rev=1569baacf4fb2a94bbf7d9f02615332407e104df#1569baacf4fb2a94bbf7d9f02615332407e104df"
 dependencies = [
  "derive_more",
  "dioxus",
@@ -7556,7 +7556,7 @@ dependencies = [
 [[package]]
 name = "stayhydated-xtask"
 version = "0.1.1"
-source = "git+https://github.com/stayhydated/shared?rev=d531bbbf740688a473e8230a90f7b6ebfaa24e70#d531bbbf740688a473e8230a90f7b6ebfaa24e70"
+source = "git+https://github.com/stayhydated/shared?rev=1569baacf4fb2a94bbf7d9f02615332407e104df#1569baacf4fb2a94bbf7d9f02615332407e104df"
 dependencies = [
  "anyhow",
  "bon",
@@ -8605,7 +8605,7 @@ dependencies = [
 
 [[package]]
 name = "web"
-version = "0.2.4"
+version = "0.2.5"
 dependencies = [
  "dioxus",
  "stayhydated-dioxus",
@@ -9355,7 +9355,7 @@ checksum = "e450f9b2ed1dff33c94c12589a87338689467b9c4f5d8a5710bd09a847d2c8a7"
 
 [[package]]
 name = "xtask"
-version = "0.2.4"
+version = "0.2.5"
 dependencies = [
  "anyhow",
  "clap",
