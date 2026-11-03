@@ -1945,7 +1945,7 @@ dependencies = [
 
 [[package]]
 name = "frame-capture"
-version = "0.2.4"
+version = "0.2.5"
 dependencies = [
  "bon",
  "derive_more",
@@ -1968,7 +1968,7 @@ dependencies = [
 
 [[package]]
 name = "frame-capture-macros"
-version = "0.2.4"
+version = "0.2.5"
 dependencies = [
  "darling",
  "frame-capture-toml",
@@ -1981,7 +1981,7 @@ dependencies = [
 
 [[package]]
 name = "frame-capture-routes"
-version = "0.2.4"
+version = "0.2.5"
 dependencies = [
  "frame-capture",
  "frame-capture-macros",
@@ -1991,7 +1991,7 @@ dependencies = [
 
 [[package]]
 name = "frame-capture-toml"
-version = "0.2.4"
+version = "0.2.5"
 dependencies = [
  "serde",
  "thiserror 2.0.21",
@@ -3977,18 +3977,18 @@ checksum = "e2db585e1d738fc771bf08a151420d3ed193d9d895a36df7f6f8a9456b911ddc"
 
 [[package]]
 name = "koruma"
-version = "0.13.1"
+version = "0.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4184a92b9943049f3f8a52b85437eedbd2a4e38ba8d852e7d979506d5f59a09e"
+checksum = "720de5c03f371ea0ce5fc890caeefcfc515e3cfd56de50b0fb0e255c8e3207fc"
 dependencies = [
  "koruma-core",
 ]
 
 [[package]]
 name = "koruma-core"
-version = "0.13.1"
+version = "0.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9e29cb26aac16ec54210da57ffcb6683286c820fca96840d92f987757a549aa6"
+checksum = "3d1eb03a2c5eb787751184a36a6ca14c67b9122a033e6a38cd63269db59ebc71"
 
 [[package]]
 name = "kqueue"
