@@ -42,7 +42,7 @@ jobs:
         if: runner.os != 'Windows'
         uses: mozilla-actions/sccache-action@v0.0.11
         with:
-          version: "v0.16.0"
+          version: "v0.20.0"
 
       - name: Install Linux dependencies
         if: runner.os == 'Linux'
@@ -84,7 +84,7 @@ jobs:
       - name: Setup sccache
         uses: mozilla-actions/sccache-action@v0.0.11
         with:
-          version: "v0.16.0"
+          version: "v0.20.0"
 
       - name: Install Linux dependencies
         uses: ./.github/actions/install-linux-deps
@@ -107,7 +107,7 @@ jobs:
       - name: Setup sccache
         uses: mozilla-actions/sccache-action@v0.0.11
         with:
-          version: "v0.16.0"
+          version: "v0.20.0"
 
       - name: Install Linux dependencies
         uses: ./.github/actions/install-linux-deps
@@ -128,7 +128,7 @@ jobs:
       - name: Setup sccache
         uses: mozilla-actions/sccache-action@v0.0.11
         with:
-          version: "v0.16.0"
+          version: "v0.20.0"
 
       - name: Install Linux dependencies
         uses: ./.github/actions/install-linux-deps
@@ -149,7 +149,7 @@ jobs:
       - name: Setup sccache
         uses: mozilla-actions/sccache-action@v0.0.11
         with:
-          version: "v0.16.0"
+          version: "v0.20.0"
 
       - name: Install Linux dependencies
         uses: ./.github/actions/install-linux-deps
@@ -190,7 +190,7 @@ jobs:
       - name: Setup sccache
         uses: mozilla-actions/sccache-action@v0.0.11
         with:
-          version: "v0.16.0"
+          version: "v0.20.0"
 
       - name: Install Linux dependencies
         uses: ./.github/actions/install-linux-deps
@@ -292,7 +292,7 @@ jobs:
       - name: Setup sccache
         uses: mozilla-actions/sccache-action@v0.0.11
         with:
-          version: "v0.16.0"
+          version: "v0.20.0"
       - name: Install Linux dependencies
         uses: ./.github/actions/install-linux-deps
       - name: Check each library feature selection independently
@@ -315,7 +315,7 @@ jobs:
       - name: Setup sccache
         uses: mozilla-actions/sccache-action@v0.0.11
         with:
-          version: "v0.16.0"
+          version: "v0.20.0"
       - name: Install GPUI Linux dependencies
         run: |
           sudo apt-get update
@@ -377,7 +377,7 @@ jobs:
       - name: Setup sccache
         uses: mozilla-actions/sccache-action@v0.0.11
         with:
-          version: "v0.16.0"
+          version: "v0.20.0"
 
       - name: Install Linux dependencies
         uses: ./.github/actions/install-linux-deps
