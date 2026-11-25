@@ -10,7 +10,7 @@ Application code normally configures this file and lets its selected facade's
 route macro read it. Depend on `frame-capture-toml` directly when parsing the
 same format in a custom tool or facade.
 
-Requires Rust 1.99 or newer.
+Requires Rust 1.100 or newer.
 
 ## Configuration
 

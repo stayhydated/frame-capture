@@ -97,7 +97,7 @@ fn window_options(title: &'static str, pixel_size: PixelSize, cx: &App) -> Windo
     );
 
     WindowOptions {
-        window_bounds: Some(WindowBounds::centered(size, cx)),
+        window_bounds: Some(WindowBounds::centered(None, size, cx)),
         titlebar: Some(TitlebarOptions {
             title: Some(format!("frame-capture GPUI - {title}").into()),
             ..Default::default()

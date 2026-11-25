@@ -9,7 +9,7 @@ shared protocol layer. Bevy applications normally use
 [`frame-capture-bevy`][bevy]; applications with an existing screenshot pipeline
 normally use [`frame-capture-routes`][routes].
 
-Requires Rust 1.99 or newer.
+Requires Rust 1.100 or newer.
 
 ## Overview
 

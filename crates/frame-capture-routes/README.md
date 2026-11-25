@@ -10,7 +10,7 @@ and other host-rendered applications.
 Depend on this facade directly for host-owned screenshot pipelines. Use
 [`frame-capture-bevy`][bevy] when the supplied Bevy runtime should save the PNG.
 
-Requires Rust 1.99 or newer.
+Requires Rust 1.100 or newer.
 
 ## Overview
 

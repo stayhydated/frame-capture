@@ -7,7 +7,7 @@ Proc macros for typed capture routes, scenarios, and registered route
 installers. Application crates normally use the reexports from their selected
 facade.
 
-Requires Rust 1.99 or newer. Generated implementations require the runtime
+Requires Rust 1.100 or newer. Generated implementations require the runtime
 types exported by the selected facade.
 
 ## Overview
