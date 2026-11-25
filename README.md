@@ -8,7 +8,7 @@
 deterministic PNG capture, with one catalog shared by interactive launches,
 capture runs, and tool-facing discovery.
 
-Requires Rust 1.99 or newer for all workspace packages. The Bevy integration
+Requires Rust 1.100 or newer for all workspace packages. The Bevy integration
 targets Bevy 0.20; host-rendered integrations choose their own rendering backend.
 
 Use [`frame-capture-bevy`][bevy-readme] for the supplied screenshot runtime or

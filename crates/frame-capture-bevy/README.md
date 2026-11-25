@@ -8,7 +8,7 @@ route interactively or through an offscreen PNG capture runtime. Depend on it
 directly when the facade should own screenshot output; use
 [`frame-capture-routes-bevy`][routes-bevy] when the host owns that runtime.
 
-Requires Rust 1.99 or newer and Bevy 0.20. Capture runs need a working graphics
+Requires Rust 1.100 or newer and Bevy 0.20. Capture runs need a working graphics
 backend and an existing output directory.
 
 Use `CaptureReady` when capture must wait for asynchronous preparation. Order

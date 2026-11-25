@@ -9,7 +9,7 @@ pixel sizes before a client launches an application.
 Depend on `frame-capture-mcp` directly in a tool-facing host, alongside the
 facade that owns the application's route catalog.
 
-Requires Rust 1.99 or newer. Stdio server helpers are asynchronous and need a
+Requires Rust 1.100 or newer. Stdio server helpers are asynchronous and need a
 host runtime compatible with `rmcp`; catalog queries can run synchronously.
 
 ## Overview
